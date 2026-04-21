@@ -32,7 +32,6 @@ const editorialWords = [
   "manuscrito",
   "escena",
   "novela",
-  "bitacora",
   "personajes",
   "poema",
 ]
