@@ -111,7 +111,7 @@ export default function Page() {
         <div className="mb-8">
           <div className="relative aspect-[16/9] w-full">
             <Image
-              src="/images/banner-home-4.png"
+              src="/images/banner-home-new.png"
               alt="Banner secundario de Palabras"
               fill
               className="object-contain"
