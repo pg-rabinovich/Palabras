@@ -1,0 +1,226 @@
+{
+  "id": "04eb2c41-21ba-4cfb-a3ab-93a5af603712",
+  "prevId": "e75bf5ed-40e6-499e-bf08-6becf7b78f0c",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.imagenes_participacion": {
+      "name": "imagenes_participacion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "participacion_id": {
+          "name": "participacion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ruta_archivo": {
+          "name": "ruta_archivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url_publica": {
+          "name": "url_publica",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nombre_archivo": {
+          "name": "nombre_archivo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo_mime": {
+          "name": "tipo_mime",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tamano_bytes": {
+          "name": "tamano_bytes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ancho": {
+          "name": "ancho",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alto": {
+          "name": "alto",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "texto_alternativo": {
+          "name": "texto_alternativo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "tipo_imagen_participacion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'galeria'"
+        },
+        "orden": {
+          "name": "orden",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "creada_en": {
+          "name": "creada_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "imagenes_participacion_participacion_id_participaciones_id_fk": {
+          "name": "imagenes_participacion_participacion_id_participaciones_id_fk",
+          "tableFrom": "imagenes_participacion",
+          "tableTo": "participaciones",
+          "columnsFrom": [
+            "participacion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.participaciones": {
+      "name": "participaciones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "titulo": {
+          "name": "titulo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre_autor": {
+          "name": "nombre_autor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'Voz anonima'"
+        },
+        "texto_json": {
+          "name": "texto_json",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "texto_html": {
+          "name": "texto_html",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "texto_plano": {
+          "name": "texto_plano",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "estado_participacion",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'borrador'"
+        },
+        "creado_en": {
+          "name": "creado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "actualizado_en": {
+          "name": "actualizado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "publicado_en": {
+          "name": "publicado_en",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.estado_participacion": {
+      "name": "estado_participacion",
+      "schema": "public",
+      "values": [
+        "borrador",
+        "publicada"
+      ]
+    },
+    "public.tipo_imagen_participacion": {
+      "name": "tipo_imagen_participacion",
+      "schema": "public",
+      "values": [
+        "portada",
+        "galeria",
+        "editor"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

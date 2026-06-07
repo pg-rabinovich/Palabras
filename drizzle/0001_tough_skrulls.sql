@@ -1,0 +1,1 @@
+ALTER TABLE "participaciones" ADD COLUMN "nombre_autor" text DEFAULT 'Voz anonima' NOT NULL;
