@@ -1,7 +1,7 @@
 import Image from "next/image"
 import Link from "next/link"
 
-import { Button } from "@/components/ui/button"
+import { AccesoNav } from "@/components/auth/acceso-nav"
 import {
   Card,
   CardContent,
@@ -36,7 +36,7 @@ const navLinks = [
   { label: "manifiesto", href: "#manifiesto" },
   { label: "programacion", href: "#programacion" },
   { label: "participacion", href: "/participacion" },
-  { label: "dashboard" },
+  { label: "obras abiertas", href: "/obras-abiertas" },
 ]
 
 export default function Page() {
@@ -68,13 +68,7 @@ export default function Page() {
             )}
           </nav>
 
-          <Button
-            asChild
-            size="lg"
-            className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
-          >
-            <Link href="/participacion">Entrar a la instalacion</Link>
-          </Button>
+          <AccesoNav />
         </header>
 
         <div id="manifiesto" className="relative pt-24">

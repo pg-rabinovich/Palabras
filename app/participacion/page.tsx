@@ -1,9 +1,12 @@
 import Link from "next/link"
 
+import { obtenerSesion } from "@/components/auth/acceso-nav"
 import { EditorParticipacion } from "@/components/participacion/editor-participacion"
 import { Button } from "@/components/ui/button"
 
-export default function ParticipacionPage() {
+export default async function ParticipacionPage() {
+  const sesion = await obtenerSesion()
+
   return (
     <main className="relative min-h-screen overflow-hidden">
       <section className="relative mx-auto w-full max-w-7xl px-6 py-6 lg:px-10">
@@ -34,7 +37,7 @@ export default function ParticipacionPage() {
             </h1>
           </div>
 
-          <EditorParticipacion />
+          <EditorParticipacion firma={sesion?.nombreMostrado} />
         </div>
       </section>
     </main>

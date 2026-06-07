@@ -20,9 +20,29 @@ export const tipoImagenParticipacion = pgEnum("tipo_imagen_participacion", [
   "editor",
 ])
 
+export const rolUsuario = pgEnum("rol_usuario", ["usuario", "admin"])
+
+// 1:1 con auth.users de Supabase. El id se completa por el trigger
+// handle_new_user (ver drizzle/0002_perfiles_trigger_rls.sql), no con defaultRandom.
+export const perfiles = pgTable("perfiles", {
+  id: uuid("id").primaryKey(),
+  nombreMostrado: text("nombre_mostrado").default("Voz anonima").notNull(),
+  email: text("email"),
+  rol: rolUsuario("rol").default("usuario").notNull(),
+  creadoEn: timestamp("creado_en", { withTimezone: true }).defaultNow().notNull(),
+  actualizadoEn: timestamp("actualizado_en", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
+
 export const participaciones = pgTable("participaciones", {
   id: uuid("id").defaultRandom().primaryKey(),
   titulo: text("titulo").notNull(),
+  // Nullable para no romper filas anonimas legacy; en altas nuevas siempre se completa.
+  autorId: uuid("autor_id").references(() => perfiles.id, {
+    onDelete: "set null",
+  }),
+  // Snapshot denormalizado del nombre del perfil al momento de guardar.
   nombreAutor: text("nombre_autor").default("Voz anonima").notNull(),
   textoJson: jsonb("texto_json").notNull(),
   textoHtml: text("texto_html").notNull(),
@@ -53,9 +73,20 @@ export const imagenesParticipacion = pgTable("imagenes_participacion", {
   creadaEn: timestamp("creada_en", { withTimezone: true }).defaultNow().notNull(),
 })
 
-export const participacionesRelations = relations(participaciones, ({ many }) => ({
-  imagenes: many(imagenesParticipacion),
+export const perfilesRelations = relations(perfiles, ({ many }) => ({
+  participaciones: many(participaciones),
 }))
+
+export const participacionesRelations = relations(
+  participaciones,
+  ({ one, many }) => ({
+    autor: one(perfiles, {
+      fields: [participaciones.autorId],
+      references: [perfiles.id],
+    }),
+    imagenes: many(imagenesParticipacion),
+  })
+)
 
 export const imagenesParticipacionRelations = relations(
   imagenesParticipacion,

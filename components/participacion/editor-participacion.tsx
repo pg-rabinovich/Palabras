@@ -74,10 +74,9 @@ function BotonEditor({
   )
 }
 
-export function EditorParticipacion() {
+export function EditorParticipacion({ firma }: { firma?: string }) {
   const inputImagenesRef = React.useRef<HTMLInputElement | null>(null)
   const [titulo, setTitulo] = React.useState("")
-  const [nombreAutor, setNombreAutor] = React.useState("")
   const [imagenes, setImagenes] = React.useState<VistaPreviaImagen[]>([])
   const [estadoGuardado, setEstadoGuardado] =
     React.useState<EstadoGuardado>("inicial")
@@ -173,7 +172,6 @@ export function EditorParticipacion() {
 
     const datos = new FormData()
     datos.append("titulo", titulo.trim())
-    datos.append("nombre_autor", nombreAutor.trim())
     datos.append("texto_json", JSON.stringify(editor.getJSON()))
     datos.append("texto_html", editor.getHTML())
     datos.append("texto_plano", textoPlano)
@@ -222,22 +220,14 @@ export function EditorParticipacion() {
         </div>
 
         <div className="space-y-2">
-          <Label
-            htmlFor="nombre_autor"
-            className="font-mono text-[0.7rem] uppercase text-[rgb(217_255_31)]"
-          >
+          <Label className="font-mono text-[0.7rem] uppercase text-[rgb(217_255_31)]">
             firma
           </Label>
-          <Input
-            id="nombre_autor"
-            value={nombreAutor}
-            onChange={(event) => setNombreAutor(event.target.value)}
-            placeholder="Voz anonima"
-            className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm uppercase tracking-[0.18em] text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
-          />
+          <div className="flex h-12 items-center rounded-md border border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] px-3 font-mono text-sm tracking-[0.18em] text-[rgb(242_238_230)] uppercase">
+            {firma ?? "Voz anonima"}
+          </div>
           <p className="font-mono text-[0.66rem] leading-5 text-[rgb(167_161_154_/_0.74)]">
-            Temporal hasta sumar login. Si queda vacio, se guarda como Voz
-            anonima.
+            Se firma con tu perfil. Lo vas a poder editar mas adelante.
           </p>
         </div>
 

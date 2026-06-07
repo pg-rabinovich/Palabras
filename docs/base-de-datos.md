@@ -18,15 +18,35 @@ SUPABASE_BUCKET_IMAGENES="imagenes-participacion"
 
 ## Tablas
 
-La primera version usa:
+`perfiles`
+
+1:1 con `auth.users` de Supabase (mismo `id`). Se crea automaticamente con el trigger
+`on_auth_user_created` cuando se registra un usuario. Campos: `id`, `nombre_mostrado` (la firma
+publica), `email`, `rol` (`usuario` | `admin`), `creado_en`, `actualizado_en`.
 
 `participaciones`
 
-Campos principales: `titulo`, `texto_json`, `texto_html`, `texto_plano`, `estado`, `creado_en`, `actualizado_en`, `publicado_en`.
+Campos principales: `titulo`, `autor_id` (FK a `perfiles`, se completa con el usuario logueado),
+`nombre_autor` (snapshot de la firma), `texto_json`, `texto_html`, `texto_plano`, `estado`,
+`creado_en`, `actualizado_en`, `publicado_en`.
 
 `imagenes_participacion`
 
 Campos principales: `participacion_id`, `ruta_archivo`, `url_publica`, `nombre_archivo`, `tipo_mime`, `tamano_bytes`, `texto_alternativo`, `tipo`, `orden`, `creada_en`.
+
+## Autenticacion (magic link)
+
+Se usa Supabase Auth con magic link (sin contrasenas). Para que el login funcione:
+
+1. En Supabase, ir a `Authentication > URL Configuration` y agregar a *Redirect URLs*:
+   - `http://localhost:3000/auth/confirm`
+   - `https://<tu-dominio-vercel>/auth/confirm`
+2. (Opcional pero recomendado) En `Authentication > Email Templates > Magic Link`, asegurarse de
+   que el enlace use el flujo de `token_hash` apuntando a `/auth/confirm`.
+
+El trigger y las policies RLS se aplican junto con la migracion `0002` (`npm run db:migrate`).
+La conexion de Drizzle usa un rol que bypassa RLS, por eso las lecturas/escrituras del backend
+siguen funcionando; RLS solo limita a los clientes anon/authenticated del browser.
 
 ## Migraciones
 
