@@ -38,7 +38,7 @@ export async function AccesoNav() {
       <Button
         asChild
         size="lg"
-        className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+        className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
       >
         <Link href="/acceso">Entrar a la instalacion</Link>
       </Button>
@@ -46,7 +46,7 @@ export async function AccesoNav() {
   }
 
   return (
-    <div className="flex flex-wrap items-center gap-3">
+    <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between lg:w-auto lg:justify-end">
       {sesion.rol === "admin" && (
         <Link
           href="/dashboard"
@@ -62,7 +62,7 @@ export async function AccesoNav() {
         <Button
           type="submit"
           size="lg"
-          className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+          className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
         >
           Salir
         </Button>

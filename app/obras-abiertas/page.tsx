@@ -79,8 +79,8 @@ export default async function ObrasAbiertasPage() {
         <div className="pointer-events-none absolute top-24 left-8 h-72 w-72 rounded-full bg-[rgb(109_40_255_/_0.16)] blur-3xl" />
         <div className="pointer-events-none absolute right-0 bottom-24 h-72 w-72 rounded-full bg-[rgb(217_255_31_/_0.08)] blur-3xl" />
 
-        <header className="relative flex flex-col gap-5 rounded-full border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-5 py-4 backdrop-blur md:flex-row md:items-center md:justify-between">
-          <nav className="flex flex-wrap gap-3 font-mono text-[0.68rem] tracking-[0.24em] text-muted-foreground uppercase">
+        <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
+          <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[0.66rem] tracking-[0.16em] text-muted-foreground uppercase sm:flex sm:flex-wrap sm:gap-4 sm:text-[0.68rem] sm:tracking-[0.24em] lg:gap-3">
             <Link href="/" className="transition-colors hover:text-[rgb(109_40_255)]">
               manifiesto
             </Link>
@@ -96,7 +96,7 @@ export default async function ObrasAbiertasPage() {
           <Button
             asChild
             size="lg"
-            className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+            className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
           >
             <Link href="/participacion">Nueva participacion</Link>
           </Button>

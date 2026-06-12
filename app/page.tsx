@@ -2,6 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { AccesoNav } from "@/components/auth/acceso-nav"
+import { SparksConstruccion } from "@/components/p5/sparks-construccion"
 import {
   Card,
   CardContent,
@@ -46,8 +47,8 @@ export default function Page() {
         <div className="absolute top-20 left-0 h-72 w-72 rounded-full bg-[rgb(109_40_255_/_0.16)] blur-3xl" />
         <div className="absolute top-40 right-8 h-64 w-64 rounded-full bg-[rgb(217_255_31_/_0.08)] blur-3xl" />
 
-        <header className="relative flex flex-col gap-5 rounded-full border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-5 py-4 backdrop-blur md:flex-row md:items-center md:justify-between">
-          <nav className="flex flex-wrap gap-3 font-mono text-[0.68rem] tracking-[0.24em] text-muted-foreground uppercase">
+        <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
+          <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[0.66rem] tracking-[0.16em] text-muted-foreground uppercase sm:flex sm:flex-wrap sm:gap-4 sm:text-[0.68rem] sm:tracking-[0.24em] lg:gap-3">
             {navLinks.map((item) =>
               item.href ? (
                 <Link
@@ -101,7 +102,12 @@ export default function Page() {
             modos de participacion
           </div>
           <h2 className="mt-5 font-serif text-5xl leading-[0.95] text-balance text-[rgb(242_238_230)] sm:text-6xl">
-            Una experiencia artistica, usable e inmersiva.
+            Una experiencia artistica{" "}
+            <span className="relative isolate inline-block whitespace-nowrap text-[rgb(242_238_230)]">
+              <SparksConstruccion />
+              <span className="relative z-10">en construccion</span>
+            </span>
+            .
           </h2>
         </div>
 
@@ -146,7 +152,11 @@ export default function Page() {
 
             if (mode.href) {
               return (
-                <Link key={mode.title} href={mode.href} className="block h-full">
+                <Link
+                  key={mode.title}
+                  href={mode.href}
+                  className="block h-full"
+                >
                   {card}
                 </Link>
               )
@@ -163,8 +173,8 @@ export default function Page() {
                 atmosfera
               </div>
               <p className="mt-4 max-w-3xl font-serif text-4xl leading-tight text-balance sm:text-5xl">
-                Oscura pero respirable. Experimental pero elegante. Intensa sin
-                convertirse en ruido.
+                En Proceso Σε εξέλιξη In Progress En cours В процессе Em
+                processo In Arbeit In uitvoering Under arbete
               </p>
             </div>
             <div className="space-y-2">
