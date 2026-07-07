@@ -37,7 +37,10 @@ export default async function ParticipacionPage() {
             </h1>
           </div>
 
-          <EditorParticipacion firma={sesion?.nombreMostrado} />
+          <EditorParticipacion
+            firma={sesion?.nombreMostrado}
+            logueada={Boolean(sesion)}
+          />
         </div>
       </section>
     </main>

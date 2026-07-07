@@ -40,7 +40,7 @@ export async function AccesoNav() {
         size="lg"
         className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
       >
-        <Link href="/acceso">Entrar a la instalacion</Link>
+        <Link href="/participacion">Entrar a la instalacion</Link>
       </Button>
     )
   }

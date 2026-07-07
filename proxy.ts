@@ -1,8 +1,9 @@
 import { NextResponse, type NextRequest } from "next/server"
 import { createServerClient } from "@supabase/ssr"
 
-// Rutas que requieren sesion. El resto es publico (lectura abierta).
-const RUTAS_PRIVADAS = ["/participacion"]
+// Rutas que requieren sesion. /participacion es publica (subida anonima);
+// /dashboard es el panel de moderacion (ademas se valida rol admin en la pagina).
+const RUTAS_PRIVADAS = ["/dashboard"]
 
 export async function proxy(request: NextRequest) {
   let respuesta = NextResponse.next({ request })

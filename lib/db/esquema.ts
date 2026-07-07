@@ -12,6 +12,7 @@ import {
 export const estadoParticipacion = pgEnum("estado_participacion", [
   "borrador",
   "publicada",
+  "rechazada",
 ])
 
 export const tipoImagenParticipacion = pgEnum("tipo_imagen_participacion", [

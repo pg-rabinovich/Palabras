@@ -11,6 +11,9 @@ export default async function AccesoPage({
   searchParams: Promise<{ error?: string }>
 }) {
   const { error } = await searchParams
+  // El login ahora es solo el acceso admin de resguardo (el publico participa
+  // sin cuenta desde /participacion), asi que siempre queda funcional.
+  const accesoHabilitado = true
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -35,7 +38,7 @@ export default async function AccesoPage({
           </Button>
         </header>
 
-        <div className="relative grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.15fr_minmax(360px,0.85fr)]">
+        <div className="relative grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.15fr_minmax(360px,0.85fr)] lg:items-stretch">
           {/* Escenario p5 con la imagen + sparks/glitch */}
           <div className="relative hidden min-h-[28rem] overflow-hidden rounded-[2rem] border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_36px_120px_-56px_rgb(0_0_0_/_0.85)] lg:block lg:min-h-[34rem]">
             <FondoGlitch />
@@ -51,7 +54,7 @@ export default async function AccesoPage({
           </div>
 
           {/* Card de login */}
-          <Card className="relative z-10 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.82)] p-8 text-[rgb(242_238_230)] backdrop-blur">
+          <Card className="relative z-10 flex flex-col justify-center border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.82)] p-8 text-[rgb(242_238_230)] backdrop-blur lg:min-h-[34rem]">
             <div className="mb-7">
               <div className="font-mono text-[0.66rem] tracking-[0.32em] text-[rgb(217_255_31)] uppercase">
                 acceso
@@ -71,7 +74,7 @@ export default async function AccesoPage({
               </p>
             )}
 
-            <FormularioAcceso />
+            <FormularioAcceso habilitado={accesoHabilitado} />
 
             <p className="mt-7 font-script text-3xl text-[rgb(217_255_31)]">
               tu palabra cuenta

@@ -13,6 +13,9 @@ import {
 } from "@/lib/supabase/admin"
 import { crearSupabaseServidor } from "@/lib/supabase/servidor"
 
+const MAX_IMAGENES = 5
+const MAX_BYTES = 5 * 1024 * 1024 // 5 MB por imagen
+
 function faltaConfiguracion() {
   return (
     !process.env.DATABASE_URL ||
@@ -24,7 +27,7 @@ function faltaConfiguracion() {
 function limpiarNombreArchivo(nombre: string) {
   return nombre
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[̀-ͯ]/g, "")
     .replace(/[^a-zA-Z0-9._-]/g, "-")
     .replace(/-+/g, "-")
     .toLowerCase()
@@ -41,22 +44,23 @@ export async function POST(request: Request) {
     )
   }
 
-  // Login obligatorio para publicar.
+  // Login opcional: cualquiera puede subir. Si el usuario es admin, se
+  // auto-aprueba; si no (anonimo o usuario comun), queda pendiente de curaduria.
   const supabaseAuth = await crearSupabaseServidor()
   const {
     data: { user },
   } = await supabaseAuth.auth.getUser()
 
-  if (!user) {
-    return NextResponse.json(
-      { mensaje: "Necesitas iniciar sesion para publicar." },
-      { status: 401 }
-    )
-  }
-
   try {
     const datos = await request.formData()
+
+    // Honeypot: si un bot completa este campo oculto, descartamos en silencio.
+    if (String(datos.get("sitio_web") ?? "").trim()) {
+      return NextResponse.json({ estado: "borrador" })
+    }
+
     const titulo = String(datos.get("titulo") ?? "").trim()
+    const firmaForm = String(datos.get("nombre_autor") ?? "").trim()
     const textoHtml = String(datos.get("texto_html") ?? "")
     const textoPlano = String(datos.get("texto_plano") ?? "").trim()
     const textoJsonRaw = String(datos.get("texto_json") ?? "{}")
@@ -69,33 +73,67 @@ export async function POST(request: Request) {
       )
     }
 
+    const archivos = datos
+      .getAll("imagenes")
+      .filter(
+        (archivo): archivo is File =>
+          archivo instanceof File && archivo.size > 0
+      )
+
+    // Salvaguardas de imagenes.
+    if (archivos.length > MAX_IMAGENES) {
+      return NextResponse.json(
+        { mensaje: `Maximo ${MAX_IMAGENES} imagenes por pieza.` },
+        { status: 400 }
+      )
+    }
+    for (const archivo of archivos) {
+      if (!archivo.type.startsWith("image/")) {
+        return NextResponse.json(
+          { mensaje: "Solo se permiten imagenes." },
+          { status: 400 }
+        )
+      }
+      if (archivo.size > MAX_BYTES) {
+        return NextResponse.json(
+          { mensaje: "Cada imagen debe pesar menos de 5 MB." },
+          { status: 400 }
+        )
+      }
+    }
+
     const db = obtenerBaseDatos()
     const supabase = obtenerSupabaseAdmin()
 
-    // La firma sale del perfil, no del formulario (snapshot al momento de guardar).
-    const [perfil] = await db
-      .select({ nombreMostrado: perfiles.nombreMostrado })
-      .from(perfiles)
-      .where(eq(perfiles.id, user.id))
-      .limit(1)
+    // Perfil (si esta logueado): firma por defecto + rol para auto-aprobar.
+    const [perfil] = user
+      ? await db
+          .select({
+            nombreMostrado: perfiles.nombreMostrado,
+            rol: perfiles.rol,
+          })
+          .from(perfiles)
+          .where(eq(perfiles.id, user.id))
+          .limit(1)
+      : [undefined]
 
-    const nombreAutor = perfil?.nombreMostrado ?? "Voz anonima"
+    const esAdmin = perfil?.rol === "admin"
+    const nombreAutor = firmaForm || perfil?.nombreMostrado || "Voz anonima"
+    const estado = esAdmin ? "publicada" : "borrador"
 
     const [participacion] = await db
       .insert(participaciones)
       .values({
         titulo,
-        autorId: user.id,
+        autorId: user?.id ?? null,
         nombreAutor,
         textoJson,
         textoHtml,
         textoPlano,
+        estado,
+        publicadoEn: esAdmin ? new Date() : null,
       })
       .returning({ id: participaciones.id })
-
-    const archivos = datos
-      .getAll("imagenes")
-      .filter((archivo): archivo is File => archivo instanceof File && archivo.size > 0)
 
     const imagenesGuardadas: (typeof imagenesParticipacion.$inferInsert)[] = []
 
@@ -135,7 +173,7 @@ export async function POST(request: Request) {
       await db.insert(imagenesParticipacion).values(imagenesGuardadas)
     }
 
-    return NextResponse.json({ id: participacion.id })
+    return NextResponse.json({ id: participacion.id, estado })
   } catch (error) {
     console.error(error)
 
