@@ -1,0 +1,1 @@
+ALTER TYPE "public"."estado_participacion" ADD VALUE 'rechazada';

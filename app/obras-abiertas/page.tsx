@@ -1,25 +1,67 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link"
+import { BookOpen } from "lucide-react"
 import { and, desc, eq } from "drizzle-orm"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { obtenerBaseDatos } from "@/lib/db/conexion"
-import {
-  imagenesParticipacion,
-  participaciones,
-} from "@/lib/db/esquema"
+import { imagenesParticipacion, participaciones } from "@/lib/db/esquema"
 
 export const dynamic = "force-dynamic"
 
-const imagenesReferencia = [
-  "/images/banner-home.png",
-  "/images/banner-home-2.png",
-  "/images/banner-home-3.png",
-  "/images/banner-home-4.png",
-  "/images/banner-home-new.png",
+// Imagen fija de las cards: la mujer con el rayo (la misma del inicio).
+const imagenMujer = "/images/banner-home-3.png"
+
+// Fondos fijos de las cards, se repiten en orden. "negro" = card en negro.
+// Para variar el mosaico, agrega/reordena imagenes aca.
+const fondosCards = [
+  imagenMujer,
+  "/images/imogen_cunningh.jpg",
+  imagenMujer,
+  "negro",
+  "/images/imogen_cunningh2.jpg",
+  imagenMujer,
 ]
+
+// Firmas inventadas para las cards sin autor real: mezcla de personas y
+// colectivos/companias de guion. Se asignan de forma estable por posicion.
+const firmasInventadas = [
+  "Lucia Vera",
+  "Taller Nocturno",
+  "Mateo Roldan",
+  "Colectivo Margen",
+  "Irene Salas",
+  "Sala Cero Guion",
+  "Tomas Bruno",
+  "Compania La Trama",
+  "Camila Ferrer",
+  "Cuarto de Guion",
+  "Julian Ocampo",
+  "Mesa de Luz",
+  "Renata Ibanez",
+  "Los Copistas",
+  "Bruno Lisandro",
+  "Cooperativa Relampago",
+  "Paula Cifuentes",
+  "Guionistas del Sur",
+  "Nicolas Aymar",
+  "Casa Borrador",
+  "Delfina Otero",
+  "Ensamble Papel",
+  "Simon Vidal",
+  "Estudio Palabra Viva",
+]
+
+// Si la firma guardada es anonima, muestra una inventada estable por posicion.
+function firmaDeCard(nombreAutor: string, index: number) {
+  const anonima =
+    !nombreAutor || nombreAutor.trim().toLowerCase() === "voz anonima"
+  return anonima
+    ? firmasInventadas[index % firmasInventadas.length]
+    : nombreAutor
+}
 
 type ObraAbierta = {
   id: string
@@ -29,37 +71,123 @@ type ObraAbierta = {
   creadoEn: Date
   urlPublica: string | null
   textoAlternativo: string | null
-  imagenReferencia: string
 }
 
+// Muestras que se usan si la base no esta disponible (Supabase pausado, corte,
+// etc.) o si todavia no hay obras. Asi el link publico nunca se cae ni se ve vacio.
+const obrasDeMuestra: ObraAbierta[] = [
+  {
+    id: "muestra-1",
+    titulo: "Ritual de las cosas que no dije",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Guardo las palabras como quien guarda semillas: sin saber cual va a crecer.",
+    creadoEn: new Date("2026-05-02T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-2",
+    titulo: "Cartografia de una madrugada",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Dibujar el insomnio como si fuera un pais con fronteras propias.",
+    creadoEn: new Date("2026-05-08T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-3",
+    titulo: "Coro para voces que se apagan",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Escribir a varias manos hasta que ninguna sea la duena del texto.",
+    creadoEn: new Date("2026-05-15T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-4",
+    titulo: "Inventario de gestos minimos",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Una mano que se abre. Una pausa. La escena entera en un parpadeo.",
+    creadoEn: new Date("2026-05-21T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-5",
+    titulo: "Notas al margen del cuerpo",
+    nombreAutor: "Voz anonima",
+    textoPlano: "Lo que la piel recuerda cuando la memoria decide olvidar.",
+    creadoEn: new Date("2026-05-27T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-6",
+    titulo: "Manual para desarmar el silencio",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Cada palabra es una herramienta y tambien una pequena traicion.",
+    creadoEn: new Date("2026-06-03T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-7",
+    titulo: "Escenas para un teatro sin publico",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Ensayar la ternura frente a butacas vacias, por si algun dia vuelven.",
+    creadoEn: new Date("2026-06-10T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+  {
+    id: "muestra-8",
+    titulo: "Archivo de futuros posibles",
+    nombreAutor: "Voz anonima",
+    textoPlano:
+      "Todo lo que todavia no pasa tambien merece un lugar donde vivir.",
+    creadoEn: new Date("2026-06-18T12:00:00Z"),
+    urlPublica: null,
+    textoAlternativo: null,
+  },
+]
+
 async function obtenerObrasAbiertas(): Promise<ObraAbierta[]> {
-  const db = obtenerBaseDatos()
+  try {
+    const db = obtenerBaseDatos()
 
-  const filas = await db
-    .select({
-      id: participaciones.id,
-      titulo: participaciones.titulo,
-      nombreAutor: participaciones.nombreAutor,
-      textoPlano: participaciones.textoPlano,
-      creadoEn: participaciones.creadoEn,
-      urlPublica: imagenesParticipacion.urlPublica,
-      textoAlternativo: imagenesParticipacion.textoAlternativo,
-    })
-    .from(participaciones)
-    .leftJoin(
-      imagenesParticipacion,
-      and(
-        eq(imagenesParticipacion.participacionId, participaciones.id),
-        eq(imagenesParticipacion.tipo, "portada")
+    const filas = await db
+      .select({
+        id: participaciones.id,
+        titulo: participaciones.titulo,
+        nombreAutor: participaciones.nombreAutor,
+        textoPlano: participaciones.textoPlano,
+        creadoEn: participaciones.creadoEn,
+        urlPublica: imagenesParticipacion.urlPublica,
+        textoAlternativo: imagenesParticipacion.textoAlternativo,
+      })
+      .from(participaciones)
+      .leftJoin(
+        imagenesParticipacion,
+        and(
+          eq(imagenesParticipacion.participacionId, participaciones.id),
+          eq(imagenesParticipacion.tipo, "portada")
+        )
       )
-    )
-    .orderBy(desc(participaciones.creadoEn))
-    .limit(36)
+      .where(eq(participaciones.estado, "publicada"))
+      .orderBy(desc(participaciones.creadoEn))
+      .limit(36)
 
-  return filas.map((fila, index) => ({
-    ...fila,
-    imagenReferencia: imagenesReferencia[index % imagenesReferencia.length],
-  }))
+    return filas.length > 0 ? filas : obrasDeMuestra
+  } catch {
+    // Base no disponible (pausa de Supabase, corte, etc.): mostramos muestras.
+    return obrasDeMuestra
+  }
 }
 
 function formatearFecha(fecha: Date) {
@@ -81,7 +209,10 @@ export default async function ObrasAbiertasPage() {
 
         <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
           <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[0.66rem] tracking-[0.16em] text-muted-foreground uppercase sm:flex sm:flex-wrap sm:gap-4 sm:text-[0.68rem] sm:tracking-[0.24em] lg:gap-3">
-            <Link href="/" className="transition-colors hover:text-[rgb(109_40_255)]">
+            <Link
+              href="/"
+              className="transition-colors hover:text-[rgb(109_40_255)]"
+            >
               manifiesto
             </Link>
             <Link
@@ -103,67 +234,82 @@ export default async function ObrasAbiertasPage() {
         </header>
 
         <div className="relative py-14">
-          <div className="mb-10 grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(280px,0.42fr)] lg:items-end">
-            <div>
-              <div className="font-mono text-[0.68rem] tracking-[0.32em] text-[rgb(217_255_31)] uppercase">
-                obras abiertas
-              </div>
-              <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-none text-balance text-[rgb(242_238_230)] sm:text-6xl">
-                Archivo vivo de piezas que empiezan a respirar juntas.
-              </h1>
+          <div className="mb-10">
+            <div className="font-mono text-[0.68rem] tracking-[0.32em] text-[rgb(217_255_31)] uppercase">
+              obras abiertas
             </div>
+            <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-none text-balance text-[rgb(242_238_230)] sm:text-6xl">
+              Archivo vivo.
+            </h1>
+          </div>
 
-            <Card className="border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.72)] p-5 text-[rgb(242_238_230)]">
-              <p className="font-mono text-[0.66rem] leading-6 tracking-[0.22em] text-[rgb(217_212_206_/_0.66)] uppercase">
-                cada card muestra una mascara visual del archivo. al pasar el
-                cursor aparece la imagen subida y el titulo de la pieza.
+          <div className="mb-10 flex items-start gap-4 rounded-2xl border border-[rgb(109_40_255_/_0.3)] bg-[rgb(11_11_15_/_0.72)] px-5 py-4 backdrop-blur">
+            <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border border-[rgb(139_92_255_/_0.45)] text-[rgb(139_92_255)]">
+              <BookOpen className="size-4" />
+            </span>
+            <div>
+              <div className="font-mono text-[0.62rem] tracking-[0.28em] text-[rgb(139_92_255)] uppercase">
+                proximamente
+              </div>
+              <p className="mt-1.5 font-serif text-lg leading-7 text-[rgb(217_212_206_/_0.86)]">
+                Pronto vas a poder abrir cada obra y leerla completa.
               </p>
-            </Card>
+            </div>
           </div>
 
           {obras.length > 0 ? (
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {obras.map((obra) => (
-                <article
-                  key={obra.id}
-                  className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_28px_90px_-58px_rgb(0_0_0_/_0.92)] transition-colors hover:border-[rgb(217_255_31_/_0.42)]"
-                >
-                  <img
-                    src={obra.imagenReferencia}
-                    alt=""
-                    className="absolute inset-0 h-full w-full object-cover opacity-[0.72] grayscale transition duration-500 group-hover:opacity-0"
-                  />
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(5_5_5_/_0.18),rgb(5_5_5_/_0.86))] transition duration-500 group-hover:opacity-0" />
+              {obras.map((obra, index) => {
+                // Fondo fijo segun el patron (mujer, foto o negro).
+                const fondo = fondosCards[index % fondosCards.length]
+                const enNegro = fondo === "negro"
 
-                  {obra.urlPublica ? (
-                    <img
-                      src={obra.urlPublica}
-                      alt={obra.textoAlternativo ?? obra.titulo}
-                      className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 blur-sm transition duration-500 group-hover:scale-100 group-hover:opacity-[0.82]"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 bg-[rgb(5_5_5)] opacity-0 transition duration-500 group-hover:opacity-100" />
-                  )}
+                return (
+                  <article
+                    key={obra.id}
+                    className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_28px_90px_-58px_rgb(0_0_0_/_0.92)] transition-colors hover:border-[rgb(217_255_31_/_0.42)]"
+                  >
+                    {enNegro ? (
+                      <div className="absolute inset-0 bg-[rgb(5_5_5)] transition duration-500 group-hover:opacity-0" />
+                    ) : (
+                      <img
+                        src={fondo}
+                        alt=""
+                        className="absolute inset-0 h-full w-full object-cover opacity-[0.72] grayscale transition duration-500 group-hover:opacity-0"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(5_5_5_/_0.18),rgb(5_5_5_/_0.86))] transition duration-500 group-hover:opacity-0" />
 
-                  <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(5_5_5_/_0.1),rgb(5_5_5_/_0.86))] opacity-0 transition duration-500 group-hover:opacity-100" />
+                    {obra.urlPublica ? (
+                      <img
+                        src={obra.urlPublica}
+                        alt={obra.textoAlternativo ?? obra.titulo}
+                        className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 blur-sm transition duration-500 group-hover:scale-100 group-hover:opacity-[0.82]"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 bg-[rgb(5_5_5)] opacity-0 transition duration-500 group-hover:opacity-100" />
+                    )}
 
-                  <div className="absolute inset-x-0 bottom-0 p-4">
-                    <div className="font-mono text-[0.62rem] tracking-[0.22em] text-[rgb(217_255_31)] uppercase transition duration-500 group-hover:-translate-y-2 group-hover:text-[rgb(139_92_255)]">
-                      {obra.nombreAutor}
+                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(5_5_5_/_0.1),rgb(5_5_5_/_0.86))] opacity-0 transition duration-500 group-hover:opacity-100" />
+
+                    <div className="absolute inset-x-0 bottom-0 p-4">
+                      <div className="truncate font-mono text-[0.62rem] tracking-[0.22em] text-[rgb(217_255_31)] uppercase transition duration-500 group-hover:-translate-y-2 group-hover:text-[rgb(139_92_255)]">
+                        {firmaDeCard(obra.nombreAutor, index)}
+                      </div>
+                      <h2 className="mt-2 translate-y-5 font-serif text-3xl leading-none text-[rgb(242_238_230)] opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                        {obra.titulo}
+                      </h2>
+                      <p className="mt-3 max-h-0 overflow-hidden font-mono text-[0.66rem] leading-5 text-[rgb(217_212_206_/_0.72)] opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
+                        {obra.textoPlano}
+                      </p>
                     </div>
-                    <h2 className="mt-2 translate-y-5 font-serif text-3xl leading-none text-[rgb(242_238_230)] opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                      {obra.titulo}
-                    </h2>
-                    <p className="mt-3 max-h-0 overflow-hidden font-mono text-[0.66rem] leading-5 text-[rgb(217_212_206_/_0.72)] opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
-                      {obra.textoPlano}
-                    </p>
-                  </div>
 
-                  <div className="absolute top-4 right-4 rounded-full border border-[rgb(242_238_230_/_0.16)] bg-[rgb(5_5_5_/_0.58)] px-3 py-1 font-mono text-[0.58rem] tracking-[0.2em] text-[rgb(242_238_230_/_0.68)] uppercase backdrop-blur">
-                    {formatearFecha(obra.creadoEn)}
-                  </div>
-                </article>
-              ))}
+                    <div className="absolute top-4 right-4 rounded-full border border-[rgb(242_238_230_/_0.16)] bg-[rgb(5_5_5_/_0.58)] px-3 py-1 font-mono text-[0.58rem] tracking-[0.2em] text-[rgb(242_238_230_/_0.68)] uppercase backdrop-blur">
+                      {formatearFecha(obra.creadoEn)}
+                    </div>
+                  </article>
+                )
+              })}
             </div>
           ) : (
             <Card className="border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.72)] p-8 text-[rgb(242_238_230)]">

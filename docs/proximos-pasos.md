@@ -1,11 +1,45 @@
 # Próximos pasos y configuración pendiente
 
-Estado al 2026-06-06: el login con magic link (Supabase) está funcionando en local y en
-producción (`palabras-one.vercel.app`). Falta resolver el envío de emails y seguir con features.
+Estado al 2026-07-07: el login con magic link (Supabase) funciona, pero el acceso publico queda
+pausado por producto mientras la app esta en construccion. La base en Supabase free puede pausarse
+por inactividad; si eso pasa, hay que entrar al dashboard y tocar `Resume`.
+
+Para evitar una experiencia rara en LinkedIn/Vercel mientras la app esta en proceso, `/acceso`
+muestra el formulario deshabilitado con el boton "Proximamente" salvo que
+`ACCESO_PUBLICO_HABILITADO="true"`.
+
+En local se puede dejar:
+
+```bash
+ACCESO_PUBLICO_HABILITADO="true"
+```
+
+En Vercel Production, no configurar esa variable (o dejarla en `false`) hasta que queramos abrir
+el acceso publico.
 
 ---
 
-## 1. Emails de auth con Resend — PENDIENTE (alta prioridad)
+## 1. Estabilidad de acceso publico — PENDIENTE (alta prioridad)
+
+Antes de volver a habilitar el envio de magic links en produccion:
+
+1. Confirmar que Supabase no este pausado.
+2. Confirmar variables de Vercel Production:
+   - `DATABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+   - `SUPABASE_BUCKET_IMAGENES`
+3. Confirmar Redirect URLs en Supabase:
+   - `http://localhost:3000/auth/confirm`
+   - `https://palabras-one.vercel.app/auth/confirm`
+4. Resolver SMTP propio con Resend o aceptar el limite bajo del mailer de prueba.
+5. Recien entonces setear en Vercel:
+   - `ACCESO_PUBLICO_HABILITADO="true"`
+
+---
+
+## 2. Emails de auth con Resend — PENDIENTE
 
 **Problema:** el mailer de prueba incorporado de Supabase tiene un límite muy bajo
 (~2-4 mails/hora a nivel de todo el proyecto). Al probar el login se llega enseguida al error
@@ -33,7 +67,7 @@ verificado** en Resend (DNS/SPF/DKIM). `vercel.app` no sirve para esto: hay que 
 
 ---
 
-## 2. Roadmap de features
+## 3. Roadmap de features
 
 - **Ver/abrir las obras publicadas**: vista de detalle de cada participación (hoy solo se listan en
   `/obras-abiertas`, no se pueden abrir).

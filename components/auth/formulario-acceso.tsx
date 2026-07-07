@@ -10,13 +10,23 @@ import { Label } from "@/components/ui/label"
 
 type EstadoEnvio = "inicial" | "enviando" | "enviado" | "error"
 
-export function FormularioAcceso() {
+type FormularioAccesoProps = {
+  habilitado?: boolean
+}
+
+export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) {
   const [email, setEmail] = React.useState("")
   const [estado, setEstado] = React.useState<EstadoEnvio>("inicial")
   const [mensaje, setMensaje] = React.useState("")
 
   async function pedirEnlace(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (!habilitado) {
+      setEstado("error")
+      setMensaje("El acceso publico todavia no esta habilitado.")
+      return
+    }
 
     const correo = email.trim()
     if (!correo) {
@@ -71,6 +81,38 @@ export function FormularioAcceso() {
           Usar otro email
         </button>
       </div>
+    )
+  }
+
+  if (!habilitado) {
+    return (
+      <form onSubmit={(event) => event.preventDefault()} className="space-y-5">
+        <div className="space-y-2">
+          <Label
+            htmlFor="email"
+            className="font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(217_255_31)] uppercase"
+          >
+            tu email
+          </Label>
+          <Input
+            id="email"
+            type="email"
+            readOnly
+            aria-disabled="true"
+            placeholder="proximamente"
+            className="h-12 cursor-default border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm tracking-[0.04em] text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+          />
+        </div>
+
+        <Button
+          type="button"
+          size="lg"
+          aria-disabled="true"
+          className="h-12 w-full cursor-default rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+        >
+          Proximamente
+        </Button>
+      </form>
     )
   }
 

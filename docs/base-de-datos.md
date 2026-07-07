@@ -12,9 +12,14 @@ NEXT_PUBLIC_SUPABASE_URL="https://[PROJECT_REF].supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="[ANON_KEY]"
 SUPABASE_SERVICE_ROLE_KEY="[SERVICE_ROLE_KEY]"
 SUPABASE_BUCKET_IMAGENES="imagenes-participacion"
+ACCESO_PUBLICO_HABILITADO="false"
 ```
 
 `DATABASE_URL` debe usar el connection string de Supabase compatible con entornos serverless. Para DBeaver conviene usar la conexion directa o el session pooler que muestra Supabase en `Connect`.
+
+`ACCESO_PUBLICO_HABILITADO` controla si `/acceso` permite pedir magic links. En produccion publica
+conviene dejarlo en `false` mientras la app este en construccion; en local puede estar en `true`
+para pruebas.
 
 ## Tablas
 
