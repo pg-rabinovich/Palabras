@@ -2,193 +2,18 @@
 
 import Link from "next/link"
 import { BookOpen } from "lucide-react"
-import { and, desc, eq } from "drizzle-orm"
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { obtenerBaseDatos } from "@/lib/db/conexion"
-import { imagenesParticipacion, participaciones } from "@/lib/db/esquema"
+import {
+  calcularSlugsParaLista,
+  esIdReal,
+  firmaDeObra,
+  fondosCards,
+  obtenerObrasAbiertas,
+} from "@/lib/obras-abiertas"
 
 export const dynamic = "force-dynamic"
-
-// Imagen fija de las cards: la mujer con el rayo (la misma del inicio).
-const imagenMujer = "/images/banner-home-3.png"
-
-// Fondos fijos de las cards, se repiten en orden. "negro" = card en negro.
-// Para variar el mosaico, agrega/reordena imagenes aca.
-const fondosCards = [
-  imagenMujer,
-  "/images/imogen_cunningh.jpg",
-  imagenMujer,
-  "negro",
-  "/images/imogen_cunningh2.jpg",
-  imagenMujer,
-]
-
-// Firmas inventadas para las cards sin autor real: mezcla de personas y
-// colectivos/companias de guion. Se asignan de forma estable por posicion.
-const firmasInventadas = [
-  "Lucia Vera",
-  "Taller Nocturno",
-  "Mateo Roldan",
-  "Colectivo Margen",
-  "Irene Salas",
-  "Sala Cero Guion",
-  "Tomas Bruno",
-  "Compania La Trama",
-  "Camila Ferrer",
-  "Cuarto de Guion",
-  "Julian Ocampo",
-  "Mesa de Luz",
-  "Renata Ibanez",
-  "Los Copistas",
-  "Bruno Lisandro",
-  "Cooperativa Relampago",
-  "Paula Cifuentes",
-  "Guionistas del Sur",
-  "Nicolas Aymar",
-  "Casa Borrador",
-  "Delfina Otero",
-  "Ensamble Papel",
-  "Simon Vidal",
-  "Estudio Palabra Viva",
-]
-
-// Si la firma guardada es anonima, muestra una inventada estable por posicion.
-function firmaDeCard(nombreAutor: string, index: number) {
-  const anonima =
-    !nombreAutor || nombreAutor.trim().toLowerCase() === "voz anonima"
-  return anonima
-    ? firmasInventadas[index % firmasInventadas.length]
-    : nombreAutor
-}
-
-type ObraAbierta = {
-  id: string
-  titulo: string
-  nombreAutor: string
-  textoPlano: string
-  creadoEn: Date
-  urlPublica: string | null
-  textoAlternativo: string | null
-}
-
-// Muestras que se usan si la base no esta disponible (Supabase pausado, corte,
-// etc.) o si todavia no hay obras. Asi el link publico nunca se cae ni se ve vacio.
-const obrasDeMuestra: ObraAbierta[] = [
-  {
-    id: "muestra-1",
-    titulo: "Ritual de las cosas que no dije",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Guardo las palabras como quien guarda semillas: sin saber cual va a crecer.",
-    creadoEn: new Date("2026-05-02T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-2",
-    titulo: "Cartografia de una madrugada",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Dibujar el insomnio como si fuera un pais con fronteras propias.",
-    creadoEn: new Date("2026-05-08T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-3",
-    titulo: "Coro para voces que se apagan",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Escribir a varias manos hasta que ninguna sea la duena del texto.",
-    creadoEn: new Date("2026-05-15T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-4",
-    titulo: "Inventario de gestos minimos",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Una mano que se abre. Una pausa. La escena entera en un parpadeo.",
-    creadoEn: new Date("2026-05-21T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-5",
-    titulo: "Notas al margen del cuerpo",
-    nombreAutor: "Voz anonima",
-    textoPlano: "Lo que la piel recuerda cuando la memoria decide olvidar.",
-    creadoEn: new Date("2026-05-27T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-6",
-    titulo: "Manual para desarmar el silencio",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Cada palabra es una herramienta y tambien una pequena traicion.",
-    creadoEn: new Date("2026-06-03T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-7",
-    titulo: "Escenas para un teatro sin publico",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Ensayar la ternura frente a butacas vacias, por si algun dia vuelven.",
-    creadoEn: new Date("2026-06-10T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-  {
-    id: "muestra-8",
-    titulo: "Archivo de futuros posibles",
-    nombreAutor: "Voz anonima",
-    textoPlano:
-      "Todo lo que todavia no pasa tambien merece un lugar donde vivir.",
-    creadoEn: new Date("2026-06-18T12:00:00Z"),
-    urlPublica: null,
-    textoAlternativo: null,
-  },
-]
-
-async function obtenerObrasAbiertas(): Promise<ObraAbierta[]> {
-  try {
-    const db = obtenerBaseDatos()
-
-    const filas = await db
-      .select({
-        id: participaciones.id,
-        titulo: participaciones.titulo,
-        nombreAutor: participaciones.nombreAutor,
-        textoPlano: participaciones.textoPlano,
-        creadoEn: participaciones.creadoEn,
-        urlPublica: imagenesParticipacion.urlPublica,
-        textoAlternativo: imagenesParticipacion.textoAlternativo,
-      })
-      .from(participaciones)
-      .leftJoin(
-        imagenesParticipacion,
-        and(
-          eq(imagenesParticipacion.participacionId, participaciones.id),
-          eq(imagenesParticipacion.tipo, "portada")
-        )
-      )
-      .where(eq(participaciones.estado, "publicada"))
-      .orderBy(desc(participaciones.creadoEn))
-      .limit(36)
-
-    return filas.length > 0 ? filas : obrasDeMuestra
-  } catch {
-    // Base no disponible (pausa de Supabase, corte, etc.): mostramos muestras.
-    return obrasDeMuestra
-  }
-}
 
 function formatearFecha(fecha: Date) {
   return new Intl.DateTimeFormat("es-AR", {
@@ -200,6 +25,7 @@ function formatearFecha(fecha: Date) {
 
 export default async function ObrasAbiertasPage() {
   const obras = await obtenerObrasAbiertas()
+  const slugs = calcularSlugsParaLista(obras)
 
   return (
     <main className="relative min-h-screen overflow-hidden">
@@ -249,10 +75,10 @@ export default async function ObrasAbiertasPage() {
             </span>
             <div>
               <div className="font-mono text-[0.62rem] tracking-[0.28em] text-[rgb(139_92_255)] uppercase">
-                proximamente
+                lectura
               </div>
               <p className="mt-1.5 font-serif text-lg leading-7 text-[rgb(217_212_206_/_0.86)]">
-                Pronto vas a poder abrir cada obra y leerla completa.
+                Click en una pieza para abrirla completa y leerla.
               </p>
             </div>
           </div>
@@ -263,11 +89,11 @@ export default async function ObrasAbiertasPage() {
                 // Fondo fijo segun el patron (mujer, foto o negro).
                 const fondo = fondosCards[index % fondosCards.length]
                 const enNegro = fondo === "negro"
+                const abrible = esIdReal(obra.id)
 
-                return (
+                const contenido = (
                   <article
-                    key={obra.id}
-                    className="group relative aspect-[4/3] overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_28px_90px_-58px_rgb(0_0_0_/_0.92)] transition-colors hover:border-[rgb(217_255_31_/_0.42)]"
+                    className={`group relative aspect-[4/3] overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_28px_90px_-58px_rgb(0_0_0_/_0.92)] transition-colors hover:border-[rgb(217_255_31_/_0.42)] ${abrible ? "cursor-pointer" : ""}`}
                   >
                     {enNegro ? (
                       <div className="absolute inset-0 bg-[rgb(5_5_5)] transition duration-500 group-hover:opacity-0" />
@@ -294,9 +120,11 @@ export default async function ObrasAbiertasPage() {
 
                     <div className="absolute inset-x-0 bottom-0 p-4">
                       <div className="truncate font-mono text-[0.62rem] tracking-[0.22em] text-[rgb(217_255_31)] uppercase transition duration-500 group-hover:-translate-y-2 group-hover:text-[rgb(139_92_255)]">
-                        {firmaDeCard(obra.nombreAutor, index)}
+                        {firmaDeObra(obra.nombreAutor, obra.id)}
                       </div>
-                      <h2 className="mt-2 translate-y-5 font-serif text-3xl leading-none text-[rgb(242_238_230)] opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                      {/* min-h reserva 2 lineas siempre, asi la firma no se desalinea
+                          segun el titulo de cada obra tenga 1 o 2 lineas. */}
+                      <h2 className="mt-2 line-clamp-2 min-h-[3.75rem] translate-y-5 font-serif text-3xl leading-none text-[rgb(242_238_230)] opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
                         {obra.titulo}
                       </h2>
                       <p className="mt-3 max-h-0 overflow-hidden font-mono text-[0.66rem] leading-5 text-[rgb(217_212_206_/_0.72)] opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
@@ -308,6 +136,17 @@ export default async function ObrasAbiertasPage() {
                       {formatearFecha(obra.creadoEn)}
                     </div>
                   </article>
+                )
+
+                return abrible ? (
+                  <Link
+                    key={obra.id}
+                    href={`/obras-abiertas/${slugs.get(obra.id) ?? obra.id}`}
+                  >
+                    {contenido}
+                  </Link>
+                ) : (
+                  <div key={obra.id}>{contenido}</div>
                 )
               })}
             </div>
