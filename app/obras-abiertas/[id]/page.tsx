@@ -121,9 +121,9 @@ export default async function ObraDetallePage({
             </div>
           )}
 
-          <div className="participacion-editor">
+          <div className="editor-palabras">
             <div
-              className="ProseMirror text-[rgb(242_238_230)]"
+              className="texto-palabras"
               dangerouslySetInnerHTML={{ __html: htmlSeguro }}
             />
           </div>
