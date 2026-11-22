@@ -10,11 +10,11 @@ export const imagenMujer = "/images/banner-home-3.png"
 // Para variar el mosaico, agrega/reordena imagenes aca.
 export const fondosCards = [
   imagenMujer,
+  "negro",
   "/images/imogen_cunningh.jpg",
-  imagenMujer,
   "negro",
   "/images/imogen_cunningh2.jpg",
-  imagenMujer,
+  "negro",
 ]
 
 // Firmas inventadas para las piezas sin autor real: mezcla de personas y

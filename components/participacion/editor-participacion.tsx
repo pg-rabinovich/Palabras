@@ -29,7 +29,7 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
@@ -146,7 +146,7 @@ export function EditorParticipacion({
     editorProps: {
       attributes: {
         class:
-          "min-h-[18rem] rounded-b-[1.25rem] px-5 py-5 font-serif text-xl leading-8 text-[rgb(242_238_230)] outline-none",
+          "min-h-[70vh] rounded-b-[1.25rem] px-6 py-6 font-serif text-xl leading-8 text-[rgb(242_238_230)] outline-none sm:px-8 sm:py-8 sm:text-2xl sm:leading-9",
       },
     },
   })
@@ -282,10 +282,7 @@ export function EditorParticipacion({
         </div>
       </div>
 
-      <form
-        onSubmit={guardarParticipacion}
-        className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]"
-      >
+      <form onSubmit={guardarParticipacion} className="space-y-8">
         {/* Honeypot anti-bots: invisible para personas. */}
         <input
           ref={honeypotRef}
@@ -296,117 +293,27 @@ export function EditorParticipacion({
           aria-hidden="true"
           className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
         />
-        <section className="min-w-0 space-y-5">
-          <div className="space-y-2">
-            <Label
-              htmlFor="titulo"
-              className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase"
-            >
-              titulo
-            </Label>
-            <Input
-              id="titulo"
-              value={titulo}
-              onChange={(event) => setTitulo(event.target.value)}
-              placeholder="Nombre de la participacion"
-              className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-serif text-xl text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
-            />
-          </div>
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="firma"
-              className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase"
-            >
-              firma
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="firma"
-                value={firma}
-                onChange={(event) => setFirma(event.target.value)}
-                placeholder="Voz anonima"
-                maxLength={60}
-                className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm tracking-[0.18em] text-[rgb(242_238_230)] uppercase placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
-              />
-              {logueada && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={persistirFirma}
-                  disabled={guardandoFirma || !firma.trim() || !firmaCambiada}
-                  className="h-12 shrink-0 rounded-md px-4 font-mono text-[0.66rem] uppercase"
-                >
-                  {guardandoFirma ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Guardar"
-                  )}
-                </Button>
-              )}
-            </div>
-            <p className="font-mono text-[0.66rem] leading-5 text-[rgb(167_161_154_/_0.74)]">
-              {mensajeFirma ||
-                "Es tu nombre publico en las obras. Lo podes cambiar cuando quieras."}
-            </p>
-          </div>
+        <div className="space-y-2">
+          <Label
+            htmlFor="titulo"
+            className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase"
+          >
+            titulo
+          </Label>
+          <Input
+            id="titulo"
+            value={titulo}
+            onChange={(event) => setTitulo(event.target.value)}
+            placeholder="Nombre de la participacion"
+            className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-serif text-xl text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+          />
+        </div>
 
-          <div className="space-y-3">
-            <Label className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase">
-              imagenes
-            </Label>
-            <input
-              ref={inputImagenesRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={agregarImagenes}
-            />
-            <button
-              type="button"
-              onClick={() => inputImagenesRef.current?.click()}
-              className="group flex min-h-40 w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[rgb(242_238_230_/_0.18)] bg-[rgb(11_11_15_/_0.7)] p-6 text-center transition-colors hover:border-[rgb(217_255_31_/_0.5)] hover:bg-[rgb(217_255_31_/_0.06)]"
-            >
-              <span className="flex size-11 items-center justify-center rounded-full border border-[rgb(242_238_230_/_0.14)] text-[rgb(217_255_31)] transition-colors group-hover:border-[rgb(217_255_31_/_0.6)]">
-                <Upload className="size-5" />
-              </span>
-              <span className="font-serif text-2xl text-[rgb(242_238_230)]">
-                Subir imagenes
-              </span>
-            </button>
-
-            {imagenes.length > 0 && (
-              <div className="grid gap-3 sm:grid-cols-2">
-                {imagenes.map((imagen) => (
-                  <div
-                    key={imagen.id}
-                    className="relative overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)]"
-                  >
-                    <img
-                      src={imagen.url}
-                      alt={imagen.archivo.name}
-                      className="aspect-[4/3] w-full object-cover"
-                    />
-                    <Button
-                      type="button"
-                      size="icon-sm"
-                      variant="destructive"
-                      title="Quitar imagen"
-                      aria-label="Quitar imagen"
-                      onClick={() => quitarImagen(imagen.id)}
-                      className="absolute top-3 right-3"
-                    >
-                      <Trash2 className="size-3" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-
-        <section className="min-w-0">
+        <div className="space-y-3">
+          <Label className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase">
+            texto
+          </Label>
           <Card className="overflow-hidden rounded-[1.5rem] border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.82)]">
             <CardHeader className="gap-4 border-b border-[rgb(242_238_230_/_0.1)] pb-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -510,9 +417,6 @@ export function EditorParticipacion({
                   <Redo2 className="size-3" />
                 </BotonEditor>
               </div>
-              <CardTitle className="font-serif text-3xl text-[rgb(242_238_230)]">
-                Texto
-              </CardTitle>
             </CardHeader>
             <CardContent className="p-0">
               <div className="participacion-editor">
@@ -520,26 +424,118 @@ export function EditorParticipacion({
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="min-h-6 font-mono text-xs text-[rgb(167_161_154)]">
-              {mensaje}
-            </p>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={estadoGuardado === "guardando"}
-              className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.7rem] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
-            >
-              {estadoGuardado === "guardando" ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Save className="size-4" />
-              )}
-              Guardar
-            </Button>
+        <div className="space-y-3">
+          <Label className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase">
+            imagenes
+          </Label>
+          <input
+            ref={inputImagenesRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={agregarImagenes}
+          />
+          <button
+            type="button"
+            onClick={() => inputImagenesRef.current?.click()}
+            className="group flex min-h-40 w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[rgb(242_238_230_/_0.18)] bg-[rgb(11_11_15_/_0.7)] p-6 text-center transition-colors hover:border-[rgb(217_255_31_/_0.5)] hover:bg-[rgb(217_255_31_/_0.06)]"
+          >
+            <span className="flex size-11 items-center justify-center rounded-full border border-[rgb(242_238_230_/_0.14)] text-[rgb(217_255_31)] transition-colors group-hover:border-[rgb(217_255_31_/_0.6)]">
+              <Upload className="size-5" />
+            </span>
+            <span className="font-serif text-2xl text-[rgb(242_238_230)]">
+              Subir imagenes
+            </span>
+          </button>
+
+          {imagenes.length > 0 && (
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {imagenes.map((imagen) => (
+                <div
+                  key={imagen.id}
+                  className="relative overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)]"
+                >
+                  <img
+                    src={imagen.url}
+                    alt={imagen.archivo.name}
+                    className="aspect-[4/3] w-full object-cover"
+                  />
+                  <Button
+                    type="button"
+                    size="icon-sm"
+                    variant="destructive"
+                    title="Quitar imagen"
+                    aria-label="Quitar imagen"
+                    onClick={() => quitarImagen(imagen.id)}
+                    className="absolute top-3 right-3"
+                  >
+                    <Trash2 className="size-3" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label
+            htmlFor="firma"
+            className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase"
+          >
+            firma
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id="firma"
+              value={firma}
+              onChange={(event) => setFirma(event.target.value)}
+              placeholder="Voz anonima"
+              maxLength={60}
+              className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm tracking-[0.18em] text-[rgb(242_238_230)] uppercase placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+            />
+            {logueada && (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={persistirFirma}
+                disabled={guardandoFirma || !firma.trim() || !firmaCambiada}
+                className="h-12 shrink-0 rounded-md px-4 font-mono text-[0.66rem] uppercase"
+              >
+                {guardandoFirma ? (
+                  <Loader2 className="size-4 animate-spin" />
+                ) : (
+                  "Guardar"
+                )}
+              </Button>
+            )}
           </div>
-        </section>
+          <p className="font-mono text-[0.66rem] leading-5 text-[rgb(167_161_154_/_0.74)]">
+            {mensajeFirma ||
+              "Es tu nombre publico en las obras. Lo podes cambiar cuando quieras."}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-3 border-t border-[rgb(242_238_230_/_0.12)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <p className="min-h-6 font-mono text-xs text-[rgb(167_161_154)]">
+            {mensaje}
+          </p>
+          <Button
+            type="submit"
+            size="lg"
+            disabled={estadoGuardado === "guardando"}
+            className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.7rem] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+          >
+            {estadoGuardado === "guardando" ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Save className="size-4" />
+            )}
+            Guardar
+          </Button>
+        </div>
       </form>
     </div>
   )
