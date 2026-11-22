@@ -7,6 +7,7 @@ import {
   participaciones,
   perfiles,
 } from "@/lib/db/esquema"
+import { sanitizarHtmlParticipacion } from "@/lib/sanitizar-html"
 import {
   bucketImagenesParticipacion,
   obtenerSupabaseAdmin,
@@ -61,7 +62,11 @@ export async function POST(request: Request) {
 
     const titulo = String(datos.get("titulo") ?? "").trim()
     const firmaForm = String(datos.get("nombre_autor") ?? "").trim()
-    const textoHtml = String(datos.get("texto_html") ?? "")
+    // Sanitizado aca (no solo al mostrar): el texto_html llega directo del
+    // cliente y la subida es anonima, puede no venir del editor real.
+    const textoHtml = sanitizarHtmlParticipacion(
+      String(datos.get("texto_html") ?? "")
+    )
     const textoPlano = String(datos.get("texto_plano") ?? "").trim()
     const textoJsonRaw = String(datos.get("texto_json") ?? "{}")
     const textoJson = JSON.parse(textoJsonRaw) as unknown
