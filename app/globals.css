@@ -28,6 +28,19 @@
     --color-editorial-line: var(--editorial-line);
     --color-editorial-glow: var(--editorial-glow);
     --color-foreground-soft: var(--foreground-soft);
+    --color-border-strong: var(--border-strong);
+    --color-surface-raised: var(--surface-raised);
+    --color-lime: var(--lime);
+    --color-lime-foreground: var(--lime-foreground);
+    --color-lime-soft: var(--lime-soft);
+    --color-violet: var(--violet);
+    --color-violet-foreground: var(--violet-foreground);
+    --color-violet-text: var(--violet-text);
+    --color-violet-soft: var(--violet-soft);
+    --color-highlight: var(--highlight);
+    --color-warning: var(--warning);
+    --color-scrim: var(--scrim);
+    --shadow-flotante: var(--sombra-flotante);
     --color-lime-text: var(--lime-text);
     --color-destructive-foreground: var(--destructive-foreground);
     --color-sidebar-ring: var(--sidebar-ring);
@@ -135,25 +148,56 @@
     --sidebar-accent-foreground: var(--neo-paper);
     --sidebar-border: rgb(242 238 230 / 0.14);
     --sidebar-ring: var(--neo-violet);
+
+    /* ---- Tokens semanticos extra (oscuro) ---- */
+    --border-strong: rgb(242 238 230 / 0.22);
+    /* Superficie de barras y cabeceras de la hoja: un escalon sobre card. */
+    --surface-raised: #101015;
+    /* Lima y violeta como RELLENO (botones, estados activos). */
+    --lime: var(--neo-lime);
+    --lime-foreground: var(--neo-black);
+    --lime-soft: rgb(217 255 31 / 0.13);
+    --violet: var(--neo-violet);
+    --violet-foreground: var(--neo-paper);
+    --violet-text: #a98bff;
+    --violet-soft: rgb(109 40 255 / 0.22);
+    /* Marcador (resaltado) y seleccion de texto. */
+    --highlight: rgb(217 255 31 / 0.22);
+    --selection: rgb(109 40 255 / 0.5);
+    --warning: #ffb36b;
+    /* Velo detras de paneles y dialogos. */
+    --scrim: rgb(5 5 5 / 0.65);
+    --sombra-flotante: 0 24px 60px rgb(0 0 0 / 0.75);
+    /* Tintas que el editor guarda dentro del texto: siguen al tema. */
+    --tinta-lima: var(--lime-text);
+    --tinta-violeta: var(--violet-text);
+    --tinta-piedra: var(--muted-foreground);
+    /* Cursor del editor. */
+    --cursor-lima: var(--neo-lime);
+    --cursor-lima-brillo: rgb(217 255 31 / 0.6);
+    --cursor-clasico: var(--neo-paper);
 }
 
 .light {
     --background: var(--neo-paper);
     --foreground: var(--neo-black);
-    --card: #f7f2ea;
+    /* La hoja del editor y las cards: un crudo casi blanco sobre el fondo. */
+    --card: #faf7f1;
     --card-foreground: var(--neo-black);
-    --popover: #f7f2ea;
+    --popover: #fdfbf7;
     --popover-foreground: var(--neo-black);
     --primary: var(--neo-black);
     --primary-foreground: var(--neo-paper);
     --secondary: #ece3d5;
     --secondary-foreground: var(--neo-black);
     --muted: #eee6db;
-    --muted-foreground: var(--neo-stone-deep);
+    /* #6b665f: 4.9:1 sobre crudo (stone-deep daba 3.9:1, no alcanza). */
+    --muted-foreground: #6b665f;
     --accent: var(--neo-violet-ink);
     --accent-foreground: var(--neo-paper);
     --foreground-soft: var(--neo-ink-soft);
-    --lime-text: var(--neo-lime-deep);
+    /* Oliva #566300: 5.7:1 sobre crudo (lime-deep #9db300 daba 2:1). */
+    --lime-text: #566300;
     --destructive-foreground: #b91c1c;
     --border: rgb(5 5 5 / 0.1);
     --input: rgb(5 5 5 / 0.08);
@@ -171,6 +215,29 @@
     --sidebar-accent-foreground: var(--neo-black);
     --sidebar-border: rgb(5 5 5 / 0.1);
     --sidebar-ring: var(--neo-violet);
+
+    /* ---- Tokens semanticos extra (claro) ---- */
+    --border-strong: rgb(5 5 5 / 0.2);
+    --surface-raised: #ebe5da;
+    --lime: var(--neo-lime);
+    --lime-foreground: var(--neo-black);
+    --lime-soft: rgb(217 255 31 / 0.5);
+    --violet: var(--neo-violet);
+    --violet-foreground: var(--neo-paper);
+    --violet-text: var(--neo-violet);
+    --violet-soft: rgb(109 40 255 / 0.12);
+    --highlight: rgb(217 255 31 / 0.6);
+    --selection: rgb(109 40 255 / 0.2);
+    --warning: #9a4a08;
+    --scrim: rgb(40 34 28 / 0.35);
+    --sombra-flotante: 0 24px 60px rgb(60 50 35 / 0.22);
+    --tinta-lima: var(--lime-text);
+    --tinta-violeta: var(--violet-text);
+    --tinta-piedra: var(--muted-foreground);
+    /* Sobre crudo el lima puro no se ve: el cursor lima se dibuja oliva con brillo lima. */
+    --cursor-lima: var(--lime-text);
+    --cursor-lima-brillo: rgb(217 255 31 / 0.9);
+    --cursor-clasico: var(--neo-black);
 }
 
 .dark {
@@ -213,6 +280,34 @@
     --sidebar-accent-foreground: var(--neo-paper);
     --sidebar-border: rgb(242 238 230 / 0.14);
     --sidebar-ring: var(--neo-violet);
+
+    /* ---- Tokens semanticos extra (oscuro) ---- */
+    --border-strong: rgb(242 238 230 / 0.22);
+    /* Superficie de barras y cabeceras de la hoja: un escalon sobre card. */
+    --surface-raised: #101015;
+    /* Lima y violeta como RELLENO (botones, estados activos). */
+    --lime: var(--neo-lime);
+    --lime-foreground: var(--neo-black);
+    --lime-soft: rgb(217 255 31 / 0.13);
+    --violet: var(--neo-violet);
+    --violet-foreground: var(--neo-paper);
+    --violet-text: #a98bff;
+    --violet-soft: rgb(109 40 255 / 0.22);
+    /* Marcador (resaltado) y seleccion de texto. */
+    --highlight: rgb(217 255 31 / 0.22);
+    --selection: rgb(109 40 255 / 0.5);
+    --warning: #ffb36b;
+    /* Velo detras de paneles y dialogos. */
+    --scrim: rgb(5 5 5 / 0.65);
+    --sombra-flotante: 0 24px 60px rgb(0 0 0 / 0.75);
+    /* Tintas que el editor guarda dentro del texto: siguen al tema. */
+    --tinta-lima: var(--lime-text);
+    --tinta-violeta: var(--violet-text);
+    --tinta-piedra: var(--muted-foreground);
+    /* Cursor del editor. */
+    --cursor-lima: var(--neo-lime);
+    --cursor-lima-brillo: rgb(217 255 31 / 0.6);
+    --cursor-clasico: var(--neo-paper);
 }
 
 @layer base {
@@ -361,7 +456,7 @@
 
   .editor-palabras .texto-palabras {
     outline: none;
-    color: rgb(232 224 212);
+    color: var(--foreground-soft);
     font-family: var(--font-serif);
     font-size: 23px;
     line-height: 1.6;
@@ -373,7 +468,7 @@
   }
 
   .editor-palabras .texto-palabras p.is-empty::before {
-    color: rgb(167 161 154 / 0.6);
+    color: color-mix(in srgb, var(--muted-foreground) 75%, transparent);
     content: attr(data-placeholder);
     float: left;
     height: 0;
@@ -386,7 +481,7 @@
   }
 
   .editor-palabras .texto-palabras h2 {
-    color: rgb(242 238 230);
+    color: var(--foreground);
     font-size: 2.1rem;
     font-weight: 500;
     line-height: 1.1;
@@ -394,7 +489,7 @@
   }
 
   .editor-palabras .texto-palabras h3 {
-    color: rgb(242 238 230);
+    color: var(--foreground);
     font-size: 1.55rem;
     font-weight: 500;
     line-height: 1.15;
@@ -403,7 +498,7 @@
 
   .editor-palabras .texto-palabras h2.is-empty::before,
   .editor-palabras .texto-palabras h3.is-empty::before {
-    color: rgb(167 161 154 / 0.5);
+    color: color-mix(in srgb, var(--muted-foreground) 65%, transparent);
     content: attr(data-placeholder);
     float: left;
     height: 0;
@@ -411,26 +506,26 @@
   }
 
   .editor-palabras .texto-palabras strong {
-    color: rgb(242 238 230);
+    color: var(--foreground);
     font-weight: 600;
   }
 
   .editor-palabras .texto-palabras a {
-    color: rgb(217 255 31);
+    color: var(--lime-text);
     text-decoration: underline;
     text-underline-offset: 3px;
   }
 
   .editor-palabras .texto-palabras mark {
-    background: rgb(217 255 31 / 0.22);
-    color: rgb(242 238 230);
+    background: var(--highlight);
+    color: inherit;
     border-radius: 2px;
     padding: 0 2px;
   }
 
   .editor-palabras .texto-palabras blockquote {
-    border-left: 2px solid rgb(217 255 31);
-    color: rgb(242 238 230);
+    border-left: 2px solid var(--lime-text);
+    color: var(--foreground);
     font-size: 1.12em;
     font-style: italic;
     line-height: 1.45;
@@ -451,12 +546,12 @@
   }
 
   .editor-palabras .texto-palabras li::marker {
-    color: rgb(217 255 31);
+    color: var(--lime-text);
   }
 
   .editor-palabras .texto-palabras .verso {
-    border-left: 2px solid rgb(242 238 230 / 0.3);
-    color: rgb(242 238 230);
+    border-left: 2px solid var(--border-strong);
+    color: var(--foreground);
     line-height: 1.5;
     padding-left: 1.6rem;
     white-space: pre-wrap;
@@ -470,7 +565,7 @@
   }
 
   .editor-palabras .texto-palabras hr::after {
-    color: rgb(217 255 31);
+    color: var(--lime-text);
     content: "✦";
     font-size: 1rem;
     left: 50%;
@@ -481,32 +576,32 @@
   }
 
   .editor-palabras .texto-palabras hr.ProseMirror-selectednode::after {
-    text-shadow: 0 0 12px rgb(217 255 31 / 0.8);
+    text-shadow: 0 0 12px var(--cursor-lima-brillo);
   }
 
   .editor-palabras .texto-palabras img {
-    border: 1px solid rgb(242 238 230 / 0.12);
+    border: 1px solid var(--border);
     border-radius: 1rem;
     max-width: 100%;
   }
 
   .editor-palabras .texto-palabras img.ProseMirror-selectednode {
-    outline: 2px solid rgb(217 255 31);
+    outline: 2px solid var(--lime-text);
   }
 
   .editor-palabras .texto-palabras ::selection {
-    background: rgb(109 40 255 / 0.5);
-    color: rgb(242 238 230);
+    background: var(--selection);
+    color: var(--foreground);
   }
 
   /* Cursor propio: un marcador de ancho cero en la posicion del cursor. */
   .editor-palabras {
-    --color-cursor: rgb(217 255 31);
-    --brillo-cursor: rgb(217 255 31 / 0.6);
+    --color-cursor: var(--cursor-lima);
+    --brillo-cursor: var(--cursor-lima-brillo);
   }
 
   .editor-palabras[data-cursor-color="blanco"] {
-    --color-cursor: rgb(242 238 230);
+    --color-cursor: var(--cursor-clasico);
     --brillo-cursor: transparent;
   }
 

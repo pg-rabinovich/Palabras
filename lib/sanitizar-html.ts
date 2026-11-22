@@ -10,7 +10,11 @@ import sanitizeHtml from "sanitize-html"
 // nadie puede colar CSS arbitrario.
 
 const alineacion = [/^(left|center|right|justify)$/]
-const colorSeguro = [/^#[0-9a-f]{3,8}$/i, /^rgba?\(\s*[\d.\s,%]+\)$/i]
+const colorSeguro = [
+  /^var\(--tinta-(lima|violeta|piedra)\)$/,
+  /^#[0-9a-f]{3,8}$/i,
+  /^rgba?\(\s*[\d.\s,%]+\)$/i,
+]
 const tamanoSeguro = [/^(1[4-9]|[2-4]\d)px$/]
 const fuenteSegura = [/^var\(--font-(serif|sans|mono)\)$/]
 

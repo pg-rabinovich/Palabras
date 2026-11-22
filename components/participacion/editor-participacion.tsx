@@ -20,6 +20,7 @@ import StarterKit from "@tiptap/starter-kit"
 import { Check, CircleAlert, Loader2, Plus, Trash2, X } from "lucide-react"
 
 import { BarraHerramientas } from "@/components/participacion/barra-herramientas"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenuComandos } from "@/components/participacion/menu-comandos"
 import { ComandosSlash } from "@/lib/editor/comandos-slash"
 import {
@@ -133,7 +134,7 @@ function useResumenTexto(editor: Editor | null) {
 }
 
 const claseEtiqueta =
-  "font-mono text-[0.62rem] tracking-[0.26em] text-[rgb(167_161_154)] uppercase"
+  "font-mono text-[0.62rem] tracking-[0.26em] text-muted-foreground uppercase"
 
 export function EditorParticipacion({
   firma: firmaInicial,
@@ -488,23 +489,23 @@ export function EditorParticipacion({
         onChange={agregarImagenes}
       />
 
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[rgb(242_238_230_/_0.1)] px-5 py-3 sm:px-7">
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-border px-5 py-3 sm:px-7">
         <div className="flex min-w-0 flex-wrap items-center gap-5">
           <Link
             href="/"
-            className="font-mono text-xs tracking-[0.24em] text-[rgb(217_255_31)] uppercase hover:text-[rgb(242_238_230)]"
+            className="font-mono text-xs tracking-[0.24em] text-lime-text uppercase hover:text-foreground"
           >
             palabras
           </Link>
-          <span className="max-w-[40ch] truncate font-mono text-[0.68rem] tracking-[0.18em] text-[rgb(167_161_154)] uppercase">
+          <span className="max-w-[40ch] truncate font-mono text-[0.68rem] tracking-[0.18em] text-muted-foreground uppercase">
             participación / {titulo.trim() || "borrador"}
           </span>
         </div>
-        <div className="flex items-center gap-2 font-mono text-[0.68rem] tracking-[0.12em] text-[rgb(167_161_154)] uppercase">
+        <div className="flex items-center gap-2 font-mono text-[0.68rem] tracking-[0.12em] text-muted-foreground uppercase">
           <span
             className={cn(
               "size-2 rounded-full",
-              borradorGuardadoEn ? "bg-[rgb(217_255_31)]" : "bg-[rgb(122_118_114)]"
+              borradorGuardadoEn ? "bg-lime" : "bg-muted-foreground"
             )}
           />
           <span>
@@ -515,14 +516,15 @@ export function EditorParticipacion({
         </div>
         <div className="flex items-center gap-3">
           {amplio && (
-            <span className="font-mono text-[0.68rem] tracking-[0.12em] text-[rgb(167_161_154)] uppercase">
+            <span className="font-mono text-[0.68rem] tracking-[0.12em] text-muted-foreground uppercase">
               {palabras} palabras
             </span>
           )}
+          <ThemeToggle />
           <button
             type="button"
             onClick={() => setPanelAbierto(true)}
-            className="h-11 rounded-full bg-[rgb(217_255_31)] px-6 font-mono text-[0.68rem] font-medium tracking-[0.14em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(242_238_230)]"
+            className="h-11 rounded-full bg-lime px-6 font-mono text-[0.68rem] font-medium tracking-[0.14em] text-lime-foreground uppercase hover:bg-primary hover:text-primary-foreground"
           >
             Publicar
           </button>
@@ -541,11 +543,11 @@ export function EditorParticipacion({
                     type="button"
                     onClick={() => irASeccion(seccion.pos)}
                     className={cn(
-                      "border-l py-0.5 text-left font-serif leading-snug transition-colors hover:text-[rgb(242_238_230)]",
+                      "border-l py-0.5 text-left font-serif leading-snug transition-colors hover:text-foreground",
                       seccion.nivel === 3 ? "pl-6 text-[0.95rem]" : "pl-3 text-base",
                       i === resumen.activa
-                        ? "border-[rgb(217_255_31)] text-[rgb(217_255_31)]"
-                        : "border-[rgb(242_238_230_/_0.12)] text-[rgb(167_161_154)]"
+                        ? "border-lime-text text-lime-text"
+                        : "border-border text-muted-foreground"
                     )}
                   >
                     {seccion.texto}
@@ -553,9 +555,9 @@ export function EditorParticipacion({
                 ))}
               </nav>
             ) : (
-              <p className="text-[0.8rem] leading-relaxed text-[rgb(167_161_154)]">
+              <p className="text-[0.8rem] leading-relaxed text-muted-foreground">
                 Los títulos de sección que escribas aparecen acá para saltar entre
-                partes. Probá con <span className="font-mono text-[rgb(217_255_31)]">/</span>{" "}
+                partes. Probá con <span className="font-mono text-lime-text">/</span>{" "}
                 o escribiendo <span className="font-mono">##</span> y un espacio.
               </p>
             )}
@@ -570,7 +572,7 @@ export function EditorParticipacion({
         >
           <div
             className={cn(
-              "flex w-full flex-col rounded-[22px] border border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15)]",
+              "flex w-full flex-col rounded-[22px] border border-border bg-card",
               amplio ? "max-w-[1360px]" : "max-w-[820px]"
             )}
           >
@@ -614,14 +616,14 @@ export function EditorParticipacion({
                   }
                 }}
                 placeholder="Título de tu pieza"
-                className="w-full resize-none overflow-hidden bg-transparent font-serif text-[2.6rem] leading-[1.05] font-medium text-[rgb(242_238_230)] outline-none placeholder:text-[rgb(167_161_154_/_0.55)] sm:text-[3.4rem]"
+                className="w-full resize-none overflow-hidden bg-transparent font-serif text-[2.6rem] leading-[1.05] font-medium text-foreground outline-none placeholder:text-muted-foreground/70 sm:text-[3.4rem]"
               />
-              <div className="mt-3 mb-8 flex flex-wrap items-center gap-3 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(167_161_154)] uppercase">
+              <div className="mt-3 mb-8 flex flex-wrap items-center gap-3 font-mono text-[0.68rem] tracking-[0.2em] text-muted-foreground uppercase">
                 <span>por</span>
                 <button
                   type="button"
                   onClick={() => setPanelAbierto(true)}
-                  className="text-[rgb(217_255_31)] uppercase hover:text-[rgb(242_238_230)]"
+                  className="text-lime-text uppercase hover:text-foreground"
                 >
                   {firma.trim() || "voz anónima"}
                 </button>
@@ -637,25 +639,25 @@ export function EditorParticipacion({
             <section className="flex flex-col gap-3">
               <span className={claseEtiqueta}>Tu sesión</span>
               <div className="grid grid-cols-2 gap-2.5">
-                <div className="rounded-2xl border border-[rgb(242_238_230_/_0.08)] bg-[rgb(11_11_15)] p-3.5">
+                <div className="rounded-2xl border border-border bg-card p-3.5">
                   <div className="font-serif text-3xl leading-none">{palabras}</div>
-                  <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-[rgb(167_161_154)] uppercase">
+                  <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
                     palabras
                   </div>
                 </div>
-                <div className="rounded-2xl border border-[rgb(242_238_230_/_0.08)] bg-[rgb(11_11_15)] p-3.5">
+                <div className="rounded-2xl border border-border bg-card p-3.5">
                   <div className="font-serif text-3xl leading-none">
                     {minutosLectura} min
                   </div>
-                  <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-[rgb(167_161_154)] uppercase">
+                  <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
                     de lectura
                   </div>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-2 text-[0.8rem] text-[rgb(217_212_206)]">
+                <div className="flex items-center justify-between gap-2 text-[0.8rem] text-foreground-soft">
                   <label htmlFor="meta">Meta de palabras</label>
-                  <span className="text-[rgb(217_255_31)] tabular-nums">
+                  <span className="text-lime-text tabular-nums">
                     {palabras} /{" "}
                     <input
                       id="meta"
@@ -668,13 +670,13 @@ export function EditorParticipacion({
                           meta: Math.max(50, Number(event.target.value) || 50),
                         })
                       }
-                      className="w-14 bg-transparent text-right text-[rgb(217_255_31)] outline-none focus-visible:underline"
+                      className="w-14 bg-transparent text-right text-lime-text outline-none focus-visible:underline"
                     />
                   </span>
                 </div>
-                <div className="h-1.5 rounded-full bg-[rgb(242_238_230_/_0.1)]">
+                <div className="h-1.5 rounded-full bg-muted">
                   <div
-                    className="h-1.5 rounded-full bg-[rgb(217_255_31)] transition-[width]"
+                    className="h-1.5 rounded-full bg-lime transition-[width]"
                     style={{ width: `${progresoMeta}%` }}
                   />
                 </div>
@@ -687,7 +689,7 @@ export function EditorParticipacion({
                 {imagenes.map((imagen) => (
                   <div
                     key={imagen.id}
-                    className="group relative aspect-square overflow-hidden rounded-[10px] border border-[rgb(242_238_230_/_0.1)]"
+                    className="group relative aspect-square overflow-hidden rounded-[10px] border border-border"
                   >
                     <img
                       src={imagen.url}
@@ -698,7 +700,7 @@ export function EditorParticipacion({
                       type="button"
                       aria-label={`Quitar ${imagen.archivo.name}`}
                       onClick={() => quitarImagen(imagen.id)}
-                      className="absolute top-1 right-1 flex size-7 items-center justify-center rounded-full bg-[rgb(5_5_5_/_0.8)] text-[rgb(242_238_230)] opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                      className="absolute top-1 right-1 flex size-7 items-center justify-center rounded-full bg-background/80 text-foreground opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                     >
                       <Trash2 className="size-3" />
                     </button>
@@ -708,7 +710,7 @@ export function EditorParticipacion({
                   type="button"
                   aria-label="Subir imágenes"
                   onClick={() => inputImagenesRef.current?.click()}
-                  className="flex aspect-square items-center justify-center rounded-[10px] border border-dashed border-[rgb(242_238_230_/_0.24)] text-[rgb(167_161_154)] hover:border-[rgb(217_255_31_/_0.6)] hover:text-[rgb(217_255_31)]"
+                  className="flex aspect-square items-center justify-center rounded-[10px] border border-dashed border-border-strong text-muted-foreground hover:border-lime-text/60 hover:text-lime-text"
                 >
                   <Plus className="size-5" />
                 </button>
@@ -718,7 +720,7 @@ export function EditorParticipacion({
         )}
       </div>
 
-      <footer className="flex flex-wrap justify-between gap-3 border-t border-[rgb(242_238_230_/_0.08)] px-5 py-3 font-mono text-[0.68rem] tracking-[0.1em] text-[rgb(167_161_154)] sm:px-7">
+      <footer className="flex flex-wrap justify-between gap-3 border-t border-border px-5 py-3 font-mono text-[0.68rem] tracking-[0.1em] text-muted-foreground sm:px-7">
         <span>
           {palabras} palabras · {resumen?.caracteres ?? 0} caracteres ·{" "}
           {resumen?.secciones.length ?? 0} secciones
@@ -732,18 +734,18 @@ export function EditorParticipacion({
             type="button"
             aria-label="Cerrar y seguir escribiendo"
             onClick={() => setPanelAbierto(false)}
-            className="absolute inset-0 bg-[rgb(5_5_5_/_0.65)] backdrop-blur-[2px]"
+            className="absolute inset-0 bg-scrim backdrop-blur-[2px]"
           />
           <aside
             role="dialog"
             aria-modal="true"
             aria-labelledby="titulo-panel-publicar"
-            className="relative flex h-full w-full max-w-[480px] flex-col gap-6 overflow-y-auto border-l border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15)] p-7"
+            className="relative flex h-full w-full max-w-[480px] flex-col gap-6 overflow-y-auto border-l border-border bg-card p-7"
           >
             <div className="flex items-center justify-between gap-3">
               <h2
                 id="titulo-panel-publicar"
-                className="font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(217_255_31)] uppercase"
+                className="font-mono text-[0.7rem] tracking-[0.24em] text-lime-text uppercase"
               >
                 Antes de publicar
               </h2>
@@ -751,7 +753,7 @@ export function EditorParticipacion({
                 type="button"
                 aria-label="Cerrar"
                 onClick={() => setPanelAbierto(false)}
-                className="flex size-11 items-center justify-center rounded-full border border-[rgb(242_238_230_/_0.16)] text-[rgb(242_238_230)] hover:border-[rgb(217_255_31_/_0.6)]"
+                className="flex size-11 items-center justify-center rounded-full border border-border-strong text-foreground hover:border-lime-text/60"
               >
                 <X className="size-4" />
               </button>
@@ -769,7 +771,7 @@ export function EditorParticipacion({
                   if (event.key === "Enter") event.preventDefault()
                 }}
                 placeholder="Nombre de la pieza"
-                className="h-12 rounded-xl border border-[rgb(242_238_230_/_0.14)] bg-[rgb(5_5_5)] px-3.5 font-serif text-xl text-[rgb(242_238_230)] outline-none placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+                className="h-12 rounded-xl border border-border bg-background px-3.5 font-serif text-xl text-foreground outline-none placeholder:text-muted-foreground/70 focus-visible:border-ring"
               />
             </div>
 
@@ -787,14 +789,14 @@ export function EditorParticipacion({
                   }}
                   placeholder="Voz anónima"
                   maxLength={60}
-                  className="h-12 min-w-0 flex-1 rounded-xl border border-[rgb(242_238_230_/_0.14)] bg-[rgb(5_5_5)] px-3.5 font-mono text-sm tracking-[0.18em] text-[rgb(242_238_230)] uppercase outline-none placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+                  className="h-12 min-w-0 flex-1 rounded-xl border border-border bg-background px-3.5 font-mono text-sm tracking-[0.18em] text-foreground uppercase outline-none placeholder:text-muted-foreground/70 focus-visible:border-ring"
                 />
                 {logueada && (
                   <button
                     type="button"
                     onClick={persistirFirma}
                     disabled={guardandoFirma || !firma.trim() || !firmaCambiada}
-                    className="h-12 shrink-0 rounded-xl border border-[rgb(242_238_230_/_0.16)] px-4 font-mono text-[0.62rem] tracking-[0.14em] text-[rgb(242_238_230)] uppercase disabled:opacity-40"
+                    className="h-12 shrink-0 rounded-xl border border-border-strong px-4 font-mono text-[0.62rem] tracking-[0.14em] text-foreground uppercase disabled:opacity-40"
                   >
                     {guardandoFirma ? (
                       <Loader2 className="size-4 animate-spin" />
@@ -804,23 +806,23 @@ export function EditorParticipacion({
                   </button>
                 )}
               </div>
-              <span className="text-xs text-[rgb(167_161_154)]">
+              <span className="text-xs text-muted-foreground">
                 {mensajeFirma ||
                   "Es tu nombre público en las obras. Lo podés cambiar cuando quieras."}
               </span>
             </div>
 
-            <div className="flex flex-col gap-2.5 rounded-2xl border border-[rgb(242_238_230_/_0.1)] bg-[rgb(5_5_5)] p-4">
+            <div className="flex flex-col gap-2.5 rounded-2xl border border-border bg-background p-4">
               <span className={claseEtiqueta}>Repaso</span>
               {repaso.map((item) => (
                 <div
                   key={item.texto}
-                  className="flex items-center gap-2.5 text-sm text-[rgb(217_212_206)]"
+                  className="flex items-center gap-2.5 text-sm text-foreground-soft"
                 >
                   {item.ok ? (
-                    <Check className="size-4 shrink-0 text-[rgb(217_255_31)]" />
+                    <Check className="size-4 shrink-0 text-lime-text" />
                   ) : (
-                    <CircleAlert className="size-4 shrink-0 text-[rgb(255_179_107)]" />
+                    <CircleAlert className="size-4 shrink-0 text-warning" />
                   )}
                   <span>{item.texto}</span>
                 </div>
@@ -828,13 +830,13 @@ export function EditorParticipacion({
               <button
                 type="button"
                 onClick={() => inputImagenesRef.current?.click()}
-                className="mt-1 self-start font-mono text-[0.62rem] tracking-[0.14em] text-[rgb(217_255_31)] uppercase hover:text-[rgb(242_238_230)]"
+                className="mt-1 self-start font-mono text-[0.62rem] tracking-[0.14em] text-lime-text uppercase hover:text-foreground"
               >
                 + Adjuntar imágenes
               </button>
             </div>
 
-            <p className="font-serif text-lg leading-relaxed text-[rgb(217_212_206)]">
+            <p className="font-serif text-lg leading-relaxed text-foreground-soft">
               Tu pieza entra a curaduría. La leemos con atención antes de sumarla
               al archivo vivo. Si resuena, aparece en Obras abiertas.
             </p>
@@ -845,8 +847,8 @@ export function EditorParticipacion({
                 className={cn(
                   "rounded-xl border px-4 py-3 text-sm",
                   estadoGuardado === "error"
-                    ? "border-[rgb(255_179_107_/_0.4)] text-[rgb(255_179_107)]"
-                    : "border-[rgb(217_255_31_/_0.4)] text-[rgb(217_255_31)]"
+                    ? "border-warning/40 text-warning"
+                    : "border-lime-text/40 text-lime-text"
                 )}
               >
                 {mensaje}
@@ -857,14 +859,14 @@ export function EditorParticipacion({
               <button
                 type="button"
                 onClick={() => setPanelAbierto(false)}
-                className="h-12 flex-1 basis-40 rounded-full border border-[rgb(242_238_230_/_0.18)] font-mono text-[0.68rem] tracking-[0.14em] text-[rgb(242_238_230)] uppercase hover:border-[rgb(217_255_31_/_0.6)]"
+                className="h-12 flex-1 basis-40 rounded-full border border-border-strong font-mono text-[0.68rem] tracking-[0.14em] text-foreground uppercase hover:border-lime-text/60"
               >
                 Seguir escribiendo
               </button>
               <button
                 type="submit"
                 disabled={estadoGuardado === "guardando" || estadoGuardado === "guardado"}
-                className="inline-flex h-12 flex-1 basis-40 items-center justify-center gap-2 rounded-full bg-[rgb(217_255_31)] font-mono text-[0.68rem] font-medium tracking-[0.14em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(242_238_230)] disabled:opacity-60"
+                className="inline-flex h-12 flex-1 basis-40 items-center justify-center gap-2 rounded-full bg-lime font-mono text-[0.68rem] font-medium tracking-[0.14em] text-lime-foreground uppercase hover:bg-primary hover:text-primary-foreground disabled:opacity-60"
               >
                 {estadoGuardado === "guardando" && (
                   <Loader2 className="size-4 animate-spin" />

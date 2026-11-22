@@ -27,7 +27,7 @@ const iconos: Record<string, React.ReactNode> = {
   verso: <span className="font-serif text-lg italic">V</span>,
   lista: <span className="text-lg">•</span>,
   "lista-numerada": <span className="font-mono text-xs">1.</span>,
-  separador: <span className="text-[rgb(217_255_31)]">✦</span>,
+  separador: <span className="text-lime-text">✦</span>,
   imagen: <span className="text-sm">▢</span>,
 }
 
@@ -124,13 +124,13 @@ export function useMenuComandos() {
         role="listbox"
         aria-label="Formatos"
         style={{ top: estado.posicion.top, left: estado.posicion.left }}
-        className="fixed z-50 flex w-[340px] flex-col gap-0.5 rounded-2xl border border-[rgb(242_238_230_/_0.16)] bg-[rgb(18_18_23)] p-1.5 shadow-[0_24px_60px_rgb(0_0_0_/_0.75)]"
+        className="fixed z-50 flex w-[340px] flex-col gap-0.5 rounded-2xl border border-border-strong bg-popover p-1.5 shadow-flotante"
       >
-        <span className="px-2.5 pt-2 pb-1 font-mono text-[0.62rem] tracking-[0.24em] text-[rgb(167_161_154)] uppercase">
+        <span className="px-2.5 pt-2 pb-1 font-mono text-[0.62rem] tracking-[0.24em] text-muted-foreground uppercase">
           Formatos
         </span>
         {estado.items.length === 0 ? (
-          <span className="px-2.5 py-3 text-sm text-[rgb(167_161_154)]">
+          <span className="px-2.5 py-3 text-sm text-muted-foreground">
             Nada coincide. Seguí escribiendo o tocá Esc.
           </span>
         ) : (
@@ -146,34 +146,34 @@ export function useMenuComandos() {
                 estado.elegir?.(item)
               }}
               className={cn(
-                "flex min-h-11 w-full items-center gap-3 rounded-xl px-2.5 py-1.5 text-left text-[rgb(242_238_230)]",
-                i === indice && "bg-[rgb(217_255_31_/_0.12)]"
+                "flex min-h-11 w-full items-center gap-3 rounded-xl px-2.5 py-1.5 text-left text-foreground",
+                i === indice && "bg-lime-soft"
               )}
             >
               <span
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-lg border border-[rgb(242_238_230_/_0.16)] text-[rgb(217_212_206)]",
+                  "flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-strong text-foreground-soft",
                   i === indice &&
-                    "border-[rgb(217_255_31_/_0.5)] text-[rgb(217_255_31)]"
+                    "border-lime-text/50 text-lime-text"
                 )}
               >
                 {iconos[item.id]}
               </span>
               <span className="flex flex-1 flex-col">
                 <span className="text-sm font-medium">{item.titulo}</span>
-                <span className="text-xs text-[rgb(167_161_154)]">
+                <span className="text-xs text-muted-foreground">
                   {item.descripcion}
                 </span>
               </span>
               {item.atajo && (
-                <span className="font-mono text-[0.68rem] text-[rgb(167_161_154)]">
+                <span className="font-mono text-[0.68rem] text-muted-foreground">
                   {item.atajo}
                 </span>
               )}
             </button>
           ))
         )}
-        <div className="mt-1 flex justify-between border-t border-[rgb(242_238_230_/_0.1)] px-2.5 pt-2 pb-1 font-mono text-[0.6rem] tracking-[0.12em] text-[rgb(167_161_154)]">
+        <div className="mt-1 flex justify-between border-t border-border px-2.5 pt-2 pb-1 font-mono text-[0.6rem] tracking-[0.12em] text-muted-foreground">
           <span>↑↓ elegir · Enter insertar</span>
           <span>Esc cerrar</span>
         </div>

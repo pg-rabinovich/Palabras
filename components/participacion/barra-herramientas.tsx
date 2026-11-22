@@ -46,10 +46,11 @@ const fuentes = [
 ] as const
 
 const colores = [
-  { nombre: "Papel", valor: null, muestra: "#f2eee6" },
-  { nombre: "Lima", valor: "#d9ff1f", muestra: "#d9ff1f" },
-  { nombre: "Violeta", valor: "#a98bff", muestra: "#a98bff" },
-  { nombre: "Piedra", valor: "#a7a19a", muestra: "#a7a19a" },
+  // Los valores son tokens (no colores): el texto guardado cambia con el tema.
+  { nombre: "Tinta", valor: null, muestra: "var(--foreground)" },
+  { nombre: "Lima", valor: "var(--tinta-lima)", muestra: "var(--tinta-lima)" },
+  { nombre: "Violeta", valor: "var(--tinta-violeta)", muestra: "var(--tinta-violeta)" },
+  { nombre: "Piedra", valor: "var(--tinta-piedra)", muestra: "var(--tinta-piedra)" },
 ] as const
 
 type Bloque = "parrafo" | "seccion" | "subseccion" | "verso" | "cita"
@@ -68,8 +69,8 @@ function Boton({
       aria-label={etiqueta}
       aria-pressed={activo}
       className={cn(
-        "inline-flex size-9 items-center justify-center rounded-[9px] text-[rgb(232_224_212)] transition-colors hover:bg-[rgb(109_40_255_/_0.22)] hover:text-[rgb(217_255_31)] disabled:opacity-40",
-        activo && "bg-[rgb(217_255_31_/_0.14)] text-[rgb(217_255_31)]",
+        "inline-flex size-9 items-center justify-center rounded-[9px] text-foreground-soft transition-colors hover:bg-violet-soft hover:text-lime-text disabled:opacity-40",
+        activo && "bg-lime-soft text-lime-text",
         className
       )}
       {...props}
@@ -81,7 +82,7 @@ function Boton({
 
 function Grupo({ children }: { children: React.ReactNode }) {
   return (
-    <div className="inline-flex items-center gap-0.5 rounded-xl border border-[rgb(242_238_230_/_0.1)] bg-[rgb(5_5_5)] p-[3px]">
+    <div className="inline-flex items-center gap-0.5 rounded-xl border border-border bg-background p-[3px]">
       {children}
     </div>
   )
@@ -117,10 +118,10 @@ function usePopover() {
 }
 
 const claseSelect =
-  "h-9 appearance-none rounded-[9px] bg-transparent pr-7 pl-2.5 text-[0.8rem] text-[rgb(232_224_212)] outline-none hover:bg-[rgb(109_40_255_/_0.22)] focus-visible:ring-1 focus-visible:ring-[rgb(217_255_31)] [&>option]:bg-[rgb(11_11_15)]"
+  "h-9 appearance-none rounded-[9px] bg-transparent pr-7 pl-2.5 text-[0.8rem] text-foreground-soft outline-none hover:bg-violet-soft focus-visible:ring-1 focus-visible:ring-ring [&>option]:bg-popover"
 
 const claseEtiquetaPopover =
-  "font-mono text-[0.6rem] tracking-[0.24em] text-[rgb(167_161_154)] uppercase"
+  "font-mono text-[0.6rem] tracking-[0.24em] text-muted-foreground uppercase"
 
 export function BarraHerramientas({
   editor,
@@ -278,15 +279,15 @@ export function BarraHerramientas({
 
   const coloresCursor: { valor: ColorCursor; etiqueta: string; muestra: string }[] =
     [
-      { valor: "lima", etiqueta: "Lima", muestra: "#d9ff1f" },
-      { valor: "blanco", etiqueta: "Blanco clásico", muestra: "#f2eee6" },
+      { valor: "lima", etiqueta: "Lima", muestra: "var(--cursor-lima)" },
+      { valor: "blanco", etiqueta: "Clásico", muestra: "var(--cursor-clasico)" },
     ]
 
   return (
     <div
       role="toolbar"
       aria-label="Herramientas de texto"
-      className="sticky top-0 z-20 flex flex-wrap items-center gap-2 rounded-t-[22px] border-b border-[rgb(242_238_230_/_0.1)] bg-[rgb(16_16_21)] px-3.5 py-2.5"
+      className="sticky top-0 z-20 flex flex-wrap items-center gap-2 rounded-t-[22px] border-b border-border bg-surface-raised px-3.5 py-2.5"
     >
       <Grupo>
         <Boton
@@ -319,7 +320,7 @@ export function BarraHerramientas({
             <option value="verso">Verso</option>
             <option value="cita">Cita</option>
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2 size-3 text-[rgb(167_161_154)]" />
+          <ChevronDown className="pointer-events-none absolute right-2 size-3 text-muted-foreground" />
         </label>
         <label className="relative inline-flex items-center">
           <span className="sr-only">Fuente</span>
@@ -334,7 +335,7 @@ export function BarraHerramientas({
               </option>
             ))}
           </select>
-          <ChevronDown className="pointer-events-none absolute right-2 size-3 text-[rgb(167_161_154)]" />
+          <ChevronDown className="pointer-events-none absolute right-2 size-3 text-muted-foreground" />
         </label>
         <Boton
           etiqueta="Achicar letra"
@@ -345,7 +346,7 @@ export function BarraHerramientas({
           <Minus className="size-3.5" />
         </Boton>
         <span
-          className="min-w-6 text-center text-[0.8rem] text-[rgb(242_238_230)] tabular-nums"
+          className="min-w-6 text-center text-[0.8rem] text-foreground tabular-nums"
           aria-label={`Tamaño ${estado.tamano}`}
         >
           {estado.tamano}
@@ -400,11 +401,11 @@ export function BarraHerramientas({
             <span className="text-sm leading-none">A</span>
             <span
               className="h-[3px] w-4"
-              style={{ background: estado.color ?? "#d9ff1f" }}
+              style={{ background: estado.color ?? "var(--tinta-lima)" }}
             />
           </Boton>
           {colorAbierto && (
-            <div className="absolute top-11 left-0 z-30 flex w-56 flex-col gap-3 rounded-2xl border border-[rgb(242_238_230_/_0.16)] bg-[rgb(18_18_23)] p-3.5 shadow-[0_24px_60px_rgb(0_0_0_/_0.75)]">
+            <div className="absolute top-11 left-0 z-30 flex w-56 flex-col gap-3 rounded-2xl border border-border-strong bg-popover p-3.5 shadow-flotante">
               <span className={claseEtiquetaPopover}>Color de letra</span>
               <div className="grid grid-cols-4 gap-1.5">
                 {colores.map((color) => (
@@ -422,9 +423,9 @@ export function BarraHerramientas({
                       setColorAbierto(false)
                     }}
                     className={cn(
-                      "flex h-10 items-center justify-center rounded-lg border border-[rgb(242_238_230_/_0.14)]",
+                      "flex h-10 items-center justify-center rounded-lg border border-border",
                       (estado.color ?? null) === color.valor &&
-                        "border-[rgb(217_255_31)]"
+                        "border-lime-text"
                     )}
                   >
                     <span
@@ -442,9 +443,9 @@ export function BarraHerramientas({
                   setColorAbierto(false)
                 }}
                 className={cn(
-                  "flex h-10 items-center gap-2 rounded-lg border border-[rgb(242_238_230_/_0.14)] px-3 text-sm text-[rgb(232_224_212)]",
+                  "flex h-10 items-center gap-2 rounded-lg border border-border px-3 text-sm text-foreground-soft",
                   estado.resaltado &&
-                    "border-[rgb(217_255_31)] text-[rgb(217_255_31)]"
+                    "border-lime-text text-lime-text"
                 )}
               >
                 <Highlighter className="size-4" />
@@ -533,7 +534,7 @@ export function BarraHerramientas({
             <Ellipsis className="size-4" />
           </Boton>
           {masAbierto && (
-            <div className="absolute top-11 right-0 z-30 flex w-[300px] flex-col gap-3 rounded-2xl border border-[rgb(242_238_230_/_0.16)] bg-[rgb(18_18_23)] p-4 shadow-[0_24px_60px_rgb(0_0_0_/_0.75)] sm:right-auto sm:left-0">
+            <div className="absolute top-11 right-0 z-30 flex w-[300px] flex-col gap-3 rounded-2xl border border-border-strong bg-popover p-4 shadow-flotante sm:right-auto sm:left-0">
               <span className={claseEtiquetaPopover}>Cursor · forma</span>
               <div className="grid grid-cols-3 gap-1.5">
                 {formas.map((forma) => (
@@ -547,9 +548,9 @@ export function BarraHerramientas({
                       onCambiarCursor({ ...cursor, forma: forma.valor })
                     }
                     className={cn(
-                      "flex h-11 items-center justify-center rounded-lg border border-[rgb(242_238_230_/_0.14)] bg-[rgb(5_5_5)] text-[rgb(232_224_212)]",
+                      "flex h-11 items-center justify-center rounded-lg border border-border bg-background text-foreground-soft",
                       cursor.forma === forma.valor &&
-                        "border-[rgb(217_255_31)] bg-[rgb(217_255_31_/_0.1)] text-[rgb(217_255_31)]"
+                        "border-lime-text bg-lime-soft text-lime-text"
                     )}
                   >
                     {forma.muestra}
@@ -567,9 +568,9 @@ export function BarraHerramientas({
                       onCambiarCursor({ ...cursor, color: color.valor })
                     }
                     className={cn(
-                      "flex h-11 items-center justify-center gap-2 rounded-lg border border-[rgb(242_238_230_/_0.14)] bg-[rgb(5_5_5)] text-[0.8rem] text-[rgb(232_224_212)]",
+                      "flex h-11 items-center justify-center gap-2 rounded-lg border border-border bg-background text-[0.8rem] text-foreground-soft",
                       cursor.color === color.valor &&
-                        "border-[rgb(217_255_31)] bg-[rgb(217_255_31_/_0.1)] text-[rgb(217_255_31)]"
+                        "border-lime-text bg-lime-soft text-lime-text"
                     )}
                   >
                     <span
@@ -580,7 +581,7 @@ export function BarraHerramientas({
                   </button>
                 ))}
               </div>
-              <label className="flex min-h-11 items-center justify-between gap-3 text-[0.82rem] text-[rgb(217_212_206)]">
+              <label className="flex min-h-11 items-center justify-between gap-3 text-[0.82rem] text-foreground-soft">
                 Titilar
                 <input
                   type="checkbox"
@@ -588,17 +589,17 @@ export function BarraHerramientas({
                   onChange={(event) =>
                     onCambiarCursor({ ...cursor, titila: event.target.checked })
                   }
-                  className="size-5 accent-[rgb(217_255_31)]"
+                  className="size-5 accent-lime-text"
                 />
               </label>
-              <div className="flex flex-col border-t border-[rgb(242_238_230_/_0.1)] pt-2">
+              <div className="flex flex-col border-t border-border pt-2">
                 <button
                   type="button"
                   onClick={() => {
                     editor.chain().focus().unsetAllMarks().clearNodes().run()
                     setMasAbierto(false)
                   }}
-                  className="flex min-h-10 items-center gap-2 text-left text-[0.82rem] text-[rgb(232_224_212)] hover:text-[rgb(217_255_31)]"
+                  className="flex min-h-10 items-center gap-2 text-left text-[0.82rem] text-foreground-soft hover:text-lime-text"
                 >
                   <RemoveFormatting className="size-4" />
                   Limpiar formato
@@ -609,7 +610,7 @@ export function BarraHerramientas({
                     editor.chain().focus().toggleVerso().run()
                     setMasAbierto(false)
                   }}
-                  className="flex min-h-10 items-center gap-2 text-left text-[0.82rem] text-[rgb(232_224_212)] hover:text-[rgb(217_255_31)]"
+                  className="flex min-h-10 items-center gap-2 text-left text-[0.82rem] text-foreground-soft hover:text-lime-text"
                 >
                   <span className="w-4 text-center font-serif italic">V</span>
                   Verso (Ctrl+Shift+V)
@@ -627,8 +628,8 @@ export function BarraHerramientas({
         className={cn(
           "ml-auto inline-flex h-10 items-center gap-2 rounded-xl border px-3.5 font-mono text-[0.62rem] tracking-[0.14em] uppercase transition-colors",
           lienzoAmplio
-            ? "border-[rgb(242_238_230_/_0.2)] text-[rgb(242_238_230)] hover:border-[rgb(217_255_31_/_0.5)]"
-            : "border-[rgb(217_255_31_/_0.45)] bg-[rgb(217_255_31_/_0.08)] text-[rgb(217_255_31)] hover:bg-[rgb(217_255_31_/_0.16)]"
+            ? "border-border-strong text-foreground hover:border-lime-text/50"
+            : "border-lime-text/45 bg-lime-soft/60 text-lime-text hover:bg-lime-soft"
         )}
       >
         {lienzoAmplio ? (
