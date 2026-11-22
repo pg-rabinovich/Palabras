@@ -3,36 +3,31 @@
 /* eslint-disable @next/next/no-img-element */
 
 import * as React from "react"
-import { EditorContent, useEditor, type JSONContent } from "@tiptap/react"
-import ImageExtension from "@tiptap/extension-image"
-import LinkExtension from "@tiptap/extension-link"
-import Placeholder from "@tiptap/extension-placeholder"
-import StarterKit from "@tiptap/starter-kit"
-import Underline from "@tiptap/extension-underline"
+import Link from "next/link"
 import {
-  Bold,
-  Heading1,
-  Heading2,
-  ImageIcon,
-  Italic,
-  List,
-  ListOrdered,
-  Loader2,
-  Quote,
-  Redo2,
-  Save,
-  Sparkles,
-  Trash2,
-  UnderlineIcon,
-  Undo2,
-  Upload,
-} from "lucide-react"
+  EditorContent,
+  useEditor,
+  useEditorState,
+  type Editor,
+} from "@tiptap/react"
+import ImageExtension from "@tiptap/extension-image"
+import Highlight from "@tiptap/extension-highlight"
+import TextAlign from "@tiptap/extension-text-align"
+import { TextStyleKit } from "@tiptap/extension-text-style"
+import Typography from "@tiptap/extension-typography"
+import { CharacterCount, Placeholder } from "@tiptap/extensions"
+import StarterKit from "@tiptap/starter-kit"
+import { Check, CircleAlert, Loader2, Plus, Trash2, X } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
+import { BarraHerramientas } from "@/components/participacion/barra-herramientas"
+import { useMenuComandos } from "@/components/participacion/menu-comandos"
+import { ComandosSlash } from "@/lib/editor/comandos-slash"
+import {
+  CursorPalabras,
+  preferenciasCursorIniciales,
+  type PreferenciasCursor,
+} from "@/lib/editor/cursor-palabras"
+import { Verso } from "@/lib/editor/verso"
 import { cn } from "@/lib/utils"
 
 type VistaPreviaImagen = {
@@ -43,37 +38,102 @@ type VistaPreviaImagen = {
 
 type EstadoGuardado = "inicial" | "guardando" | "guardado" | "error"
 
-const contenidoInicial: JSONContent = {
-  type: "doc",
-  content: [
-    {
-      type: "paragraph",
-    },
-  ],
+type Borrador = {
+  titulo: string
+  contenido: unknown
+  guardadoEn: string
 }
 
-function BotonEditor({
-  activo,
-  className,
-  ...props
-}: React.ComponentProps<typeof Button> & {
-  activo?: boolean
-}) {
-  return (
-    <Button
-      type="button"
-      variant={activo ? "secondary" : "ghost"}
-      size="icon-sm"
-      className={cn(
-        "border border-[rgb(242_238_230_/_0.1)] text-[rgb(242_238_230_/_0.76)] hover:border-[rgb(109_40_255)] hover:bg-[rgb(109_40_255_/_0.16)] hover:text-[rgb(217_255_31)]",
-        activo &&
-          "border-[rgb(217_255_31_/_0.42)] bg-[rgb(217_255_31_/_0.12)] text-[rgb(217_255_31)]",
-        className
-      )}
-      {...props}
-    />
-  )
+const CLAVE_BORRADOR = "palabras:borrador:v1"
+const CLAVE_PREFERENCIAS = "palabras:editor:preferencias:v1"
+const PALABRAS_POR_MINUTO = 200
+
+type Preferencias = {
+  cursor: PreferenciasCursor
+  lienzoAmplio: boolean
+  meta: number
 }
+
+const preferenciasIniciales: Preferencias = {
+  cursor: preferenciasCursorIniciales,
+  lienzoAmplio: false,
+  meta: 500,
+}
+
+function leerJSON<T>(clave: string): T | null {
+  try {
+    const crudo = window.localStorage.getItem(clave)
+    return crudo ? (JSON.parse(crudo) as T) : null
+  } catch {
+    return null
+  }
+}
+
+function escribirJSON(clave: string, valor: unknown) {
+  try {
+    window.localStorage.setItem(clave, JSON.stringify(valor))
+  } catch {
+    // Sin almacenamiento (modo privado, cuota llena): seguimos sin guardar.
+  }
+}
+
+function borrarClave(clave: string) {
+  try {
+    window.localStorage.removeItem(clave)
+  } catch {
+    // nada
+  }
+}
+
+function horaCorta(iso: string) {
+  return new Date(iso).toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  })
+}
+
+type Seccion = { texto: string; nivel: number; pos: number }
+
+function useResumenTexto(editor: Editor | null) {
+  return useEditorState({
+    editor,
+    selector: ({ editor: e }) => {
+      if (!e) {
+        return { palabras: 0, caracteres: 0, secciones: [] as Seccion[], activa: -1 }
+      }
+      const secciones: Seccion[] = []
+      e.state.doc.descendants((nodo, pos) => {
+        if (nodo.type.name === "heading") {
+          secciones.push({
+            texto: nodo.textContent.trim() || "Sin título",
+            nivel: Number(nodo.attrs.level ?? 2),
+            pos,
+          })
+          return false
+        }
+        return true
+      })
+      const desde = e.state.selection.from
+      let activa = -1
+      secciones.forEach((seccion, i) => {
+        if (seccion.pos <= desde) activa = i
+      })
+      const almacen = e.storage.characterCount as {
+        words: () => number
+        characters: () => number
+      }
+      return {
+        palabras: almacen.words(),
+        caracteres: almacen.characters(),
+        secciones,
+        activa,
+      }
+    },
+  })
+}
+
+const claseEtiqueta =
+  "font-mono text-[0.62rem] tracking-[0.26em] text-[rgb(167_161_154)] uppercase"
 
 export function EditorParticipacion({
   firma: firmaInicial,
@@ -84,6 +144,8 @@ export function EditorParticipacion({
 }) {
   const inputImagenesRef = React.useRef<HTMLInputElement | null>(null)
   const honeypotRef = React.useRef<HTMLInputElement | null>(null)
+  const tituloRef = React.useRef<HTMLTextAreaElement | null>(null)
+
   const [titulo, setTitulo] = React.useState("")
   const [firma, setFirma] = React.useState(firmaInicial ?? "")
   const [imagenes, setImagenes] = React.useState<VistaPreviaImagen[]>([])
@@ -92,64 +154,127 @@ export function EditorParticipacion({
   const [mensaje, setMensaje] = React.useState("")
   const [guardandoFirma, setGuardandoFirma] = React.useState(false)
   const [mensajeFirma, setMensajeFirma] = React.useState("")
+  const [panelAbierto, setPanelAbierto] = React.useState(false)
+  const [preferencias, setPreferencias] =
+    React.useState<Preferencias>(preferenciasIniciales)
+  const [borradorGuardadoEn, setBorradorGuardadoEn] = React.useState<
+    string | null
+  >(null)
 
+  const { puente, menu } = useMenuComandos()
   const firmaCambiada = firma.trim() !== (firmaInicial ?? "").trim()
 
-  // Persiste la firma en el perfil. Devuelve true si salio bien.
-  async function persistirFirma(): Promise<boolean> {
-    const nombre = firma.trim()
-
-    if (!nombre) {
-      setMensajeFirma("La firma no puede estar vacia.")
-      return false
-    }
-
-    setGuardandoFirma(true)
-    setMensajeFirma("")
-
-    const respuesta = await fetch("/api/perfil", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ nombreMostrado: nombre }),
+  function actualizarPreferencias(cambio: Partial<Preferencias>) {
+    setPreferencias((actuales) => {
+      const nuevas = { ...actuales, ...cambio }
+      escribirJSON(CLAVE_PREFERENCIAS, nuevas)
+      return nuevas
     })
-
-    setGuardandoFirma(false)
-
-    if (!respuesta.ok) {
-      const resultado = (await respuesta.json().catch(() => ({}))) as {
-        mensaje?: string
-      }
-      setMensajeFirma(resultado.mensaje ?? "No se pudo guardar la firma.")
-      return false
-    }
-
-    setMensajeFirma("Firma guardada.")
-    return true
   }
 
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
-      StarterKit,
-      Underline,
-      LinkExtension.configure({
-        openOnClick: false,
+      StarterKit.configure({
+        heading: { levels: [2, 3] },
+        link: { openOnClick: false, autolink: true },
       }),
-      ImageExtension.configure({
-        allowBase64: false,
+      ImageExtension.configure({ allowBase64: false }),
+      Highlight,
+      TextStyleKit.configure({ lineHeight: false, backgroundColor: false }),
+      TextAlign.configure({ types: ["heading", "paragraph", "verso"] }),
+      Typography.configure({
+        openDoubleQuote: "«",
+        closeDoubleQuote: "»",
       }),
+      CharacterCount,
       Placeholder.configure({
-        placeholder: "Escribi una escena, poema, nota o fragmento colectivo...",
+        placeholder: ({ node }) =>
+          node.type.name === "heading"
+            ? "Título de la sección"
+            : "Escribí, o tocá / para formatos…",
       }),
+      Verso,
+      CursorPalabras,
+      ComandosSlash.configure({ puente }),
     ],
-    content: contenidoInicial,
     editorProps: {
       attributes: {
-        class:
-          "min-h-[18rem] rounded-b-[1.25rem] px-5 py-5 font-serif text-xl leading-8 text-[rgb(242_238_230)] outline-none",
+        class: "texto-palabras",
+        "aria-label": "Texto de tu pieza",
+        spellcheck: "true",
       },
     },
+    // onCreate corre solo en el navegador: ahi recuperamos borrador y preferencias.
+    onCreate: ({ editor: e }) => {
+      const guardadas = leerJSON<Partial<Preferencias>>(CLAVE_PREFERENCIAS)
+      if (guardadas) {
+        setPreferencias((actuales) => ({
+          ...actuales,
+          ...guardadas,
+          cursor: { ...actuales.cursor, ...guardadas.cursor },
+        }))
+      }
+      const borrador = leerJSON<Borrador>(CLAVE_BORRADOR)
+      if (borrador?.titulo) {
+        setTitulo(borrador.titulo)
+      }
+      if (borrador?.contenido) {
+        e.commands.setContent(borrador.contenido as never, {
+          emitUpdate: false,
+        })
+        setBorradorGuardadoEn(borrador.guardadoEn)
+      }
+    },
   })
+
+  // Autoguardado del borrador en este dispositivo (texto y titulo).
+  const tituloActualRef = React.useRef(titulo)
+  React.useEffect(() => {
+    tituloActualRef.current = titulo
+  }, [titulo])
+  const temporizadorRef = React.useRef<ReturnType<typeof setTimeout>>(undefined)
+
+  const programarGuardado = React.useCallback(() => {
+    clearTimeout(temporizadorRef.current)
+    temporizadorRef.current = setTimeout(() => {
+      if (!editor || editor.isDestroyed) {
+        return
+      }
+      const guardadoEn = new Date().toISOString()
+      escribirJSON(CLAVE_BORRADOR, {
+        titulo: tituloActualRef.current,
+        contenido: editor.getJSON(),
+        guardadoEn,
+      } satisfies Borrador)
+      setBorradorGuardadoEn(guardadoEn)
+    }, 700)
+  }, [editor])
+
+  React.useEffect(() => {
+    if (!editor) {
+      return
+    }
+    editor.on("update", programarGuardado)
+    return () => {
+      editor.off("update", programarGuardado)
+      clearTimeout(temporizadorRef.current)
+    }
+  }, [editor, programarGuardado])
+
+  function cambiarTitulo(valor: string) {
+    setTitulo(valor)
+    programarGuardado()
+  }
+
+  // El titulo crece con el texto.
+  React.useLayoutEffect(() => {
+    const campo = tituloRef.current
+    if (campo) {
+      campo.style.height = "auto"
+      campo.style.height = `${campo.scrollHeight}px`
+    }
+  }, [titulo, preferencias.lienzoAmplio])
 
   React.useEffect(() => {
     return () => {
@@ -157,15 +282,60 @@ export function EditorParticipacion({
     }
   }, [imagenes])
 
+  React.useEffect(() => {
+    if (!panelAbierto) {
+      return
+    }
+    function alTecla(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setPanelAbierto(false)
+      }
+    }
+    document.addEventListener("keydown", alTecla)
+    return () => document.removeEventListener("keydown", alTecla)
+  }, [panelAbierto])
+
+  const resumen = useResumenTexto(editor)
+  const palabras = resumen?.palabras ?? 0
+  const minutosLectura = Math.max(1, Math.round(palabras / PALABRAS_POR_MINUTO))
+  const progresoMeta = Math.min(
+    100,
+    Math.round((palabras / Math.max(1, preferencias.meta)) * 100)
+  )
+
+  // Persiste la firma en el perfil. Devuelve true si salio bien.
+  async function persistirFirma(): Promise<boolean> {
+    const nombre = firma.trim()
+    if (!nombre) {
+      setMensajeFirma("La firma no puede estar vacía.")
+      return false
+    }
+    setGuardandoFirma(true)
+    setMensajeFirma("")
+    const respuesta = await fetch("/api/perfil", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nombreMostrado: nombre }),
+    })
+    setGuardandoFirma(false)
+    if (!respuesta.ok) {
+      const resultado = (await respuesta.json().catch(() => ({}))) as {
+        mensaje?: string
+      }
+      setMensajeFirma(resultado.mensaje ?? "No se pudo guardar la firma.")
+      return false
+    }
+    setMensajeFirma("Firma guardada.")
+    return true
+  }
+
   function agregarImagenes(event: React.ChangeEvent<HTMLInputElement>) {
     const archivos = Array.from(event.target.files ?? []).filter((archivo) =>
       archivo.type.startsWith("image/")
     )
-
     if (archivos.length === 0) {
       return
     }
-
     setImagenes((actuales) => [
       ...actuales,
       ...archivos.map((archivo) => ({
@@ -174,44 +344,44 @@ export function EditorParticipacion({
         url: URL.createObjectURL(archivo),
       })),
     ])
-
     event.target.value = ""
   }
 
   function quitarImagen(id: string) {
     setImagenes((actuales) => {
       const imagen = actuales.find((item) => item.id === id)
-
       if (imagen) {
         URL.revokeObjectURL(imagen.url)
       }
-
       return actuales.filter((item) => item.id !== id)
     })
   }
 
-  function insertarImagenPorUrl() {
-    const url = window.prompt("URL de la imagen")
-
-    if (!url || !editor) {
+  function irASeccion(pos: number) {
+    if (!editor) {
       return
     }
-
-    editor.chain().focus().setImage({ src: url }).run()
+    const nodo = editor.view.nodeDOM(pos)
+    if (nodo instanceof HTMLElement) {
+      nodo.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+    editor
+      .chain()
+      .focus()
+      .setTextSelection(pos + 1)
+      .run()
   }
 
   async function guardarParticipacion(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
-
     if (!editor) {
       return
     }
 
     const textoPlano = editor.getText().trim()
-
     if (!titulo.trim() || !textoPlano) {
       setEstadoGuardado("error")
-      setMensaje("Falta titulo o texto para guardar.")
+      setMensaje("Falta título o texto para enviar.")
       return
     }
 
@@ -220,7 +390,7 @@ export function EditorParticipacion({
       const ok = await persistirFirma()
       if (!ok) {
         setEstadoGuardado("error")
-        setMensaje("Revisa la firma antes de publicar.")
+        setMensaje("Revisá la firma antes de publicar.")
         return
       }
     }
@@ -253,294 +423,460 @@ export function EditorParticipacion({
 
     if (!respuesta.ok) {
       setEstadoGuardado("error")
-      setMensaje(resultado.mensaje ?? "No se pudo guardar la participacion.")
+      setMensaje(resultado.mensaje ?? "No se pudo guardar la participación.")
       return
     }
 
+    borrarClave(CLAVE_BORRADOR)
     setEstadoGuardado("guardado")
     setMensaje(
       resultado.estado === "publicada"
-        ? "Publicada. Ya esta en Obras abiertas."
-        : "Gracias. Tu pieza entro a curaduria: la vas a ver cuando la aprobemos."
+        ? "Publicada. Ya está en Obras abiertas."
+        : "Gracias. Tu pieza entró a curaduría: la vas a ver cuando la aprobemos."
     )
   }
 
+  const amplio = preferencias.lienzoAmplio
+  const { cursor } = preferencias
+
+  const repaso = [
+    { ok: titulo.trim().length > 0, texto: titulo.trim() ? "Título" : "Falta el título" },
+    {
+      ok: palabras > 0,
+      texto:
+        palabras > 0
+          ? `${palabras} palabras · ${minutosLectura} min de lectura`
+          : "Todavía no hay texto",
+    },
+    {
+      ok: firma.trim().length > 0,
+      texto: firma.trim() ? `Firma: ${firma.trim()}` : "Sin firma: se publica como voz anónima",
+    },
+    {
+      ok: true,
+      texto:
+        imagenes.length === 0
+          ? "Sin imágenes adjuntas"
+          : `${imagenes.length} ${imagenes.length === 1 ? "imagen adjunta" : "imágenes adjuntas"}`,
+    },
+  ]
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-start gap-4 rounded-2xl border border-[rgb(217_255_31_/_0.25)] bg-[rgb(11_11_15_/_0.72)] px-5 py-4 backdrop-blur">
-        <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-full border border-[rgb(217_255_31_/_0.4)] text-[rgb(217_255_31)]">
-          <Sparkles className="size-4" />
-        </span>
-        <div>
-          <div className="font-mono text-[0.62rem] tracking-[0.28em] text-[rgb(217_255_31)] uppercase">
-            curaduria
-          </div>
-          <p className="mt-1.5 font-serif text-lg leading-7 text-[rgb(217_212_206_/_0.86)]">
-            Tu pieza entra a una curaduria. La leemos con atencion antes de
-            sumarla al archivo vivo. Si resuena, aparece en Obras abiertas.
-          </p>
+    <form
+      onSubmit={guardarParticipacion}
+      className="editor-palabras flex min-h-screen flex-col"
+      data-cursor-forma={cursor.forma}
+      data-cursor-color={cursor.color}
+      data-cursor-titila={cursor.titila ? "si" : "no"}
+    >
+      {/* Honeypot anti-bots: invisible para personas. */}
+      <input
+        ref={honeypotRef}
+        type="text"
+        name="sitio_web"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
+      />
+      <input
+        ref={inputImagenesRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="hidden"
+        onChange={agregarImagenes}
+      />
+
+      <header className="flex flex-wrap items-center justify-between gap-4 border-b border-[rgb(242_238_230_/_0.1)] px-5 py-3 sm:px-7">
+        <div className="flex min-w-0 flex-wrap items-center gap-5">
+          <Link
+            href="/"
+            className="font-mono text-xs tracking-[0.24em] text-[rgb(217_255_31)] uppercase hover:text-[rgb(242_238_230)]"
+          >
+            palabras
+          </Link>
+          <span className="max-w-[40ch] truncate font-mono text-[0.68rem] tracking-[0.18em] text-[rgb(167_161_154)] uppercase">
+            participación / {titulo.trim() || "borrador"}
+          </span>
         </div>
-      </div>
+        <div className="flex items-center gap-2 font-mono text-[0.68rem] tracking-[0.12em] text-[rgb(167_161_154)] uppercase">
+          <span
+            className={cn(
+              "size-2 rounded-full",
+              borradorGuardadoEn ? "bg-[rgb(217_255_31)]" : "bg-[rgb(122_118_114)]"
+            )}
+          />
+          <span>
+            {borradorGuardadoEn
+              ? `Borrador guardado en este dispositivo · ${horaCorta(borradorGuardadoEn)}`
+              : "Borrador nuevo"}
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          {amplio && (
+            <span className="font-mono text-[0.68rem] tracking-[0.12em] text-[rgb(167_161_154)] uppercase">
+              {palabras} palabras
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={() => setPanelAbierto(true)}
+            className="h-11 rounded-full bg-[rgb(217_255_31)] px-6 font-mono text-[0.68rem] font-medium tracking-[0.14em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(242_238_230)]"
+          >
+            Publicar
+          </button>
+        </div>
+      </header>
 
-      <form
-        onSubmit={guardarParticipacion}
-        className="grid gap-6 lg:grid-cols-[0.92fr_1.08fr]"
-      >
-        {/* Honeypot anti-bots: invisible para personas. */}
-        <input
-          ref={honeypotRef}
-          type="text"
-          name="sitio_web"
-          tabIndex={-1}
-          autoComplete="off"
-          aria-hidden="true"
-          className="pointer-events-none absolute -left-[9999px] h-0 w-0 opacity-0"
-        />
-        <section className="min-w-0 space-y-5">
-          <div className="space-y-2">
-            <Label
-              htmlFor="titulo"
-              className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase"
-            >
-              titulo
-            </Label>
-            <Input
-              id="titulo"
-              value={titulo}
-              onChange={(event) => setTitulo(event.target.value)}
-              placeholder="Nombre de la participacion"
-              className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-serif text-xl text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
-            />
-          </div>
+      <div className="flex flex-1 items-stretch">
+        {!amplio && (
+          <aside className="hidden w-[230px] shrink-0 flex-col gap-3 px-6 py-8 lg:flex">
+            <span className={claseEtiqueta}>Mapa del texto</span>
+            {resumen && resumen.secciones.length > 0 ? (
+              <nav aria-label="Secciones del texto" className="flex flex-col gap-2.5">
+                {resumen.secciones.map((seccion, i) => (
+                  <button
+                    key={`${seccion.pos}-${i}`}
+                    type="button"
+                    onClick={() => irASeccion(seccion.pos)}
+                    className={cn(
+                      "border-l py-0.5 text-left font-serif leading-snug transition-colors hover:text-[rgb(242_238_230)]",
+                      seccion.nivel === 3 ? "pl-6 text-[0.95rem]" : "pl-3 text-base",
+                      i === resumen.activa
+                        ? "border-[rgb(217_255_31)] text-[rgb(217_255_31)]"
+                        : "border-[rgb(242_238_230_/_0.12)] text-[rgb(167_161_154)]"
+                    )}
+                  >
+                    {seccion.texto}
+                  </button>
+                ))}
+              </nav>
+            ) : (
+              <p className="text-[0.8rem] leading-relaxed text-[rgb(167_161_154)]">
+                Los títulos de sección que escribas aparecen acá para saltar entre
+                partes. Probá con <span className="font-mono text-[rgb(217_255_31)]">/</span>{" "}
+                o escribiendo <span className="font-mono">##</span> y un espacio.
+              </p>
+            )}
+          </aside>
+        )}
 
-          <div className="space-y-2">
-            <Label
-              htmlFor="firma"
-              className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase"
-            >
-              firma
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                id="firma"
-                value={firma}
-                onChange={(event) => setFirma(event.target.value)}
-                placeholder="Voz anonima"
-                maxLength={60}
-                className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm tracking-[0.18em] text-[rgb(242_238_230)] uppercase placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+        <main
+          className={cn(
+            "flex min-w-0 flex-1 justify-center",
+            amplio ? "px-3 py-4 sm:px-6 sm:py-5" : "px-3 py-6 sm:px-6"
+          )}
+        >
+          <div
+            className={cn(
+              "flex w-full flex-col rounded-[22px] border border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15)]",
+              amplio ? "max-w-[1360px]" : "max-w-[820px]"
+            )}
+          >
+            {editor && (
+              <BarraHerramientas
+                editor={editor}
+                lienzoAmplio={amplio}
+                onAlternarLienzo={() =>
+                  actualizarPreferencias({ lienzoAmplio: !amplio })
+                }
+                cursor={cursor}
+                onCambiarCursor={(nuevo) =>
+                  actualizarPreferencias({ cursor: nuevo })
+                }
               />
-              {logueada && (
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={persistirFirma}
-                  disabled={guardandoFirma || !firma.trim() || !firmaCambiada}
-                  className="h-12 shrink-0 rounded-md px-4 font-mono text-[0.66rem] uppercase"
-                >
-                  {guardandoFirma ? (
-                    <Loader2 className="size-4 animate-spin" />
-                  ) : (
-                    "Guardar"
-                  )}
-                </Button>
+            )}
+
+            <div
+              className={cn(
+                "mx-auto flex w-full flex-1 flex-col",
+                amplio
+                  ? "max-w-[900px] px-6 pt-14 pb-24 sm:px-8"
+                  : "px-6 pt-12 pb-20 sm:px-14"
               )}
-            </div>
-            <p className="font-mono text-[0.66rem] leading-5 text-[rgb(167_161_154_/_0.74)]">
-              {mensajeFirma ||
-                "Es tu nombre publico en las obras. Lo podes cambiar cuando quieras."}
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <Label className="font-mono text-[0.7rem] text-[rgb(217_255_31)] uppercase">
-              imagenes
-            </Label>
-            <input
-              ref={inputImagenesRef}
-              type="file"
-              accept="image/*"
-              multiple
-              className="hidden"
-              onChange={agregarImagenes}
-            />
-            <button
-              type="button"
-              onClick={() => inputImagenesRef.current?.click()}
-              className="group flex min-h-40 w-full flex-col items-center justify-center gap-4 rounded-2xl border border-dashed border-[rgb(242_238_230_/_0.18)] bg-[rgb(11_11_15_/_0.7)] p-6 text-center transition-colors hover:border-[rgb(217_255_31_/_0.5)] hover:bg-[rgb(217_255_31_/_0.06)]"
             >
-              <span className="flex size-11 items-center justify-center rounded-full border border-[rgb(242_238_230_/_0.14)] text-[rgb(217_255_31)] transition-colors group-hover:border-[rgb(217_255_31_/_0.6)]">
-                <Upload className="size-5" />
-              </span>
-              <span className="font-serif text-2xl text-[rgb(242_238_230)]">
-                Subir imagenes
-              </span>
-            </button>
+              <label htmlFor="titulo" className="sr-only">
+                Título
+              </label>
+              <textarea
+                id="titulo"
+                ref={tituloRef}
+                rows={1}
+                value={titulo}
+                onChange={(event) =>
+                  cambiarTitulo(event.target.value.replace(/\n/g, " "))
+                }
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") {
+                    event.preventDefault()
+                    editor?.commands.focus("start")
+                  }
+                }}
+                placeholder="Título de tu pieza"
+                className="w-full resize-none overflow-hidden bg-transparent font-serif text-[2.6rem] leading-[1.05] font-medium text-[rgb(242_238_230)] outline-none placeholder:text-[rgb(167_161_154_/_0.55)] sm:text-[3.4rem]"
+              />
+              <div className="mt-3 mb-8 flex flex-wrap items-center gap-3 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(167_161_154)] uppercase">
+                <span>por</span>
+                <button
+                  type="button"
+                  onClick={() => setPanelAbierto(true)}
+                  className="text-[rgb(217_255_31)] uppercase hover:text-[rgb(242_238_230)]"
+                >
+                  {firma.trim() || "voz anónima"}
+                </button>
+              </div>
 
-            {imagenes.length > 0 && (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <EditorContent editor={editor} className="flex-1" />
+            </div>
+          </div>
+        </main>
+
+        {!amplio && (
+          <aside className="hidden w-[270px] shrink-0 flex-col gap-7 px-6 py-8 xl:flex">
+            <section className="flex flex-col gap-3">
+              <span className={claseEtiqueta}>Tu sesión</span>
+              <div className="grid grid-cols-2 gap-2.5">
+                <div className="rounded-2xl border border-[rgb(242_238_230_/_0.08)] bg-[rgb(11_11_15)] p-3.5">
+                  <div className="font-serif text-3xl leading-none">{palabras}</div>
+                  <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-[rgb(167_161_154)] uppercase">
+                    palabras
+                  </div>
+                </div>
+                <div className="rounded-2xl border border-[rgb(242_238_230_/_0.08)] bg-[rgb(11_11_15)] p-3.5">
+                  <div className="font-serif text-3xl leading-none">
+                    {minutosLectura} min
+                  </div>
+                  <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-[rgb(167_161_154)] uppercase">
+                    de lectura
+                  </div>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-2 text-[0.8rem] text-[rgb(217_212_206)]">
+                  <label htmlFor="meta">Meta de palabras</label>
+                  <span className="text-[rgb(217_255_31)] tabular-nums">
+                    {palabras} /{" "}
+                    <input
+                      id="meta"
+                      type="number"
+                      min={50}
+                      step={50}
+                      value={preferencias.meta}
+                      onChange={(event) =>
+                        actualizarPreferencias({
+                          meta: Math.max(50, Number(event.target.value) || 50),
+                        })
+                      }
+                      className="w-14 bg-transparent text-right text-[rgb(217_255_31)] outline-none focus-visible:underline"
+                    />
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full bg-[rgb(242_238_230_/_0.1)]">
+                  <div
+                    className="h-1.5 rounded-full bg-[rgb(217_255_31)] transition-[width]"
+                    style={{ width: `${progresoMeta}%` }}
+                  />
+                </div>
+              </div>
+            </section>
+
+            <section className="flex flex-col gap-3">
+              <span className={claseEtiqueta}>Imágenes adjuntas</span>
+              <div className="grid grid-cols-3 gap-2">
                 {imagenes.map((imagen) => (
                   <div
                     key={imagen.id}
-                    className="relative overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)]"
+                    className="group relative aspect-square overflow-hidden rounded-[10px] border border-[rgb(242_238_230_/_0.1)]"
                   >
                     <img
                       src={imagen.url}
                       alt={imagen.archivo.name}
-                      className="aspect-[4/3] w-full object-cover"
+                      className="size-full object-cover"
                     />
-                    <Button
+                    <button
                       type="button"
-                      size="icon-sm"
-                      variant="destructive"
-                      title="Quitar imagen"
-                      aria-label="Quitar imagen"
+                      aria-label={`Quitar ${imagen.archivo.name}`}
                       onClick={() => quitarImagen(imagen.id)}
-                      className="absolute top-3 right-3"
+                      className="absolute top-1 right-1 flex size-7 items-center justify-center rounded-full bg-[rgb(5_5_5_/_0.8)] text-[rgb(242_238_230)] opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                     >
                       <Trash2 className="size-3" />
-                    </Button>
+                    </button>
                   </div>
                 ))}
+                <button
+                  type="button"
+                  aria-label="Subir imágenes"
+                  onClick={() => inputImagenesRef.current?.click()}
+                  className="flex aspect-square items-center justify-center rounded-[10px] border border-dashed border-[rgb(242_238_230_/_0.24)] text-[rgb(167_161_154)] hover:border-[rgb(217_255_31_/_0.6)] hover:text-[rgb(217_255_31)]"
+                >
+                  <Plus className="size-5" />
+                </button>
               </div>
-            )}
-          </div>
-        </section>
+            </section>
+          </aside>
+        )}
+      </div>
 
-        <section className="min-w-0">
-          <Card className="overflow-hidden rounded-[1.5rem] border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.82)]">
-            <CardHeader className="gap-4 border-b border-[rgb(242_238_230_/_0.1)] pb-4">
-              <div className="flex flex-wrap items-center gap-2">
-                <BotonEditor
-                  title="Negrita"
-                  aria-label="Negrita"
-                  activo={editor?.isActive("bold")}
-                  onClick={() => editor?.chain().focus().toggleBold().run()}
-                >
-                  <Bold className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Italica"
-                  aria-label="Italica"
-                  activo={editor?.isActive("italic")}
-                  onClick={() => editor?.chain().focus().toggleItalic().run()}
-                >
-                  <Italic className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Subrayado"
-                  aria-label="Subrayado"
-                  activo={editor?.isActive("underline")}
-                  onClick={() =>
-                    editor?.chain().focus().toggleUnderline().run()
-                  }
-                >
-                  <UnderlineIcon className="size-3" />
-                </BotonEditor>
-                <Separator orientation="vertical" className="mx-1 h-6" />
-                <BotonEditor
-                  title="Titulo 1"
-                  aria-label="Titulo 1"
-                  activo={editor?.isActive("heading", { level: 1 })}
-                  onClick={() =>
-                    editor?.chain().focus().toggleHeading({ level: 1 }).run()
-                  }
-                >
-                  <Heading1 className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Titulo 2"
-                  aria-label="Titulo 2"
-                  activo={editor?.isActive("heading", { level: 2 })}
-                  onClick={() =>
-                    editor?.chain().focus().toggleHeading({ level: 2 }).run()
-                  }
-                >
-                  <Heading2 className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Lista"
-                  aria-label="Lista"
-                  activo={editor?.isActive("bulletList")}
-                  onClick={() =>
-                    editor?.chain().focus().toggleBulletList().run()
-                  }
-                >
-                  <List className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Lista numerada"
-                  aria-label="Lista numerada"
-                  activo={editor?.isActive("orderedList")}
-                  onClick={() =>
-                    editor?.chain().focus().toggleOrderedList().run()
-                  }
-                >
-                  <ListOrdered className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Cita"
-                  aria-label="Cita"
-                  activo={editor?.isActive("blockquote")}
-                  onClick={() =>
-                    editor?.chain().focus().toggleBlockquote().run()
-                  }
-                >
-                  <Quote className="size-3" />
-                </BotonEditor>
-                <Separator orientation="vertical" className="mx-1 h-6" />
-                <BotonEditor
-                  title="Imagen por URL"
-                  aria-label="Imagen por URL"
-                  onClick={insertarImagenPorUrl}
-                >
-                  <ImageIcon className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Deshacer"
-                  aria-label="Deshacer"
-                  onClick={() => editor?.chain().focus().undo().run()}
-                >
-                  <Undo2 className="size-3" />
-                </BotonEditor>
-                <BotonEditor
-                  title="Rehacer"
-                  aria-label="Rehacer"
-                  onClick={() => editor?.chain().focus().redo().run()}
-                >
-                  <Redo2 className="size-3" />
-                </BotonEditor>
-              </div>
-              <CardTitle className="font-serif text-3xl text-[rgb(242_238_230)]">
-                Texto
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="p-0">
-              <div className="participacion-editor">
-                <EditorContent editor={editor} />
-              </div>
-            </CardContent>
-          </Card>
+      <footer className="flex flex-wrap justify-between gap-3 border-t border-[rgb(242_238_230_/_0.08)] px-5 py-3 font-mono text-[0.68rem] tracking-[0.1em] text-[rgb(167_161_154)] sm:px-7">
+        <span>
+          {palabras} palabras · {resumen?.caracteres ?? 0} caracteres ·{" "}
+          {resumen?.secciones.length ?? 0} secciones
+        </span>
+        <span>/ formatos · Ctrl+B negrita · Ctrl+I itálica · Ctrl+Z deshacer</span>
+      </footer>
 
-          <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className="min-h-6 font-mono text-xs text-[rgb(167_161_154)]">
-              {mensaje}
+      {panelAbierto && (
+        <div className="fixed inset-0 z-40 flex justify-end">
+          <button
+            type="button"
+            aria-label="Cerrar y seguir escribiendo"
+            onClick={() => setPanelAbierto(false)}
+            className="absolute inset-0 bg-[rgb(5_5_5_/_0.65)] backdrop-blur-[2px]"
+          />
+          <aside
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="titulo-panel-publicar"
+            className="relative flex h-full w-full max-w-[480px] flex-col gap-6 overflow-y-auto border-l border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15)] p-7"
+          >
+            <div className="flex items-center justify-between gap-3">
+              <h2
+                id="titulo-panel-publicar"
+                className="font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(217_255_31)] uppercase"
+              >
+                Antes de publicar
+              </h2>
+              <button
+                type="button"
+                aria-label="Cerrar"
+                onClick={() => setPanelAbierto(false)}
+                className="flex size-11 items-center justify-center rounded-full border border-[rgb(242_238_230_/_0.16)] text-[rgb(242_238_230)] hover:border-[rgb(217_255_31_/_0.6)]"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="titulo-publicar" className={claseEtiqueta}>
+                Título
+              </label>
+              <input
+                id="titulo-publicar"
+                value={titulo}
+                onChange={(event) => cambiarTitulo(event.target.value)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter") event.preventDefault()
+                }}
+                placeholder="Nombre de la pieza"
+                className="h-12 rounded-xl border border-[rgb(242_238_230_/_0.14)] bg-[rgb(5_5_5)] px-3.5 font-serif text-xl text-[rgb(242_238_230)] outline-none placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+              />
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <label htmlFor="firma" className={claseEtiqueta}>
+                Firma
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="firma"
+                  value={firma}
+                  onChange={(event) => setFirma(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") event.preventDefault()
+                  }}
+                  placeholder="Voz anónima"
+                  maxLength={60}
+                  className="h-12 min-w-0 flex-1 rounded-xl border border-[rgb(242_238_230_/_0.14)] bg-[rgb(5_5_5)] px-3.5 font-mono text-sm tracking-[0.18em] text-[rgb(242_238_230)] uppercase outline-none placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+                />
+                {logueada && (
+                  <button
+                    type="button"
+                    onClick={persistirFirma}
+                    disabled={guardandoFirma || !firma.trim() || !firmaCambiada}
+                    className="h-12 shrink-0 rounded-xl border border-[rgb(242_238_230_/_0.16)] px-4 font-mono text-[0.62rem] tracking-[0.14em] text-[rgb(242_238_230)] uppercase disabled:opacity-40"
+                  >
+                    {guardandoFirma ? (
+                      <Loader2 className="size-4 animate-spin" />
+                    ) : (
+                      "Guardar"
+                    )}
+                  </button>
+                )}
+              </div>
+              <span className="text-xs text-[rgb(167_161_154)]">
+                {mensajeFirma ||
+                  "Es tu nombre público en las obras. Lo podés cambiar cuando quieras."}
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-2.5 rounded-2xl border border-[rgb(242_238_230_/_0.1)] bg-[rgb(5_5_5)] p-4">
+              <span className={claseEtiqueta}>Repaso</span>
+              {repaso.map((item) => (
+                <div
+                  key={item.texto}
+                  className="flex items-center gap-2.5 text-sm text-[rgb(217_212_206)]"
+                >
+                  {item.ok ? (
+                    <Check className="size-4 shrink-0 text-[rgb(217_255_31)]" />
+                  ) : (
+                    <CircleAlert className="size-4 shrink-0 text-[rgb(255_179_107)]" />
+                  )}
+                  <span>{item.texto}</span>
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => inputImagenesRef.current?.click()}
+                className="mt-1 self-start font-mono text-[0.62rem] tracking-[0.14em] text-[rgb(217_255_31)] uppercase hover:text-[rgb(242_238_230)]"
+              >
+                + Adjuntar imágenes
+              </button>
+            </div>
+
+            <p className="font-serif text-lg leading-relaxed text-[rgb(217_212_206)]">
+              Tu pieza entra a curaduría. La leemos con atención antes de sumarla
+              al archivo vivo. Si resuena, aparece en Obras abiertas.
             </p>
-            <Button
-              type="submit"
-              size="lg"
-              disabled={estadoGuardado === "guardando"}
-              className="h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.7rem] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
-            >
-              {estadoGuardado === "guardando" ? (
-                <Loader2 className="size-4 animate-spin" />
-              ) : (
-                <Save className="size-4" />
-              )}
-              Guardar
-            </Button>
-          </div>
-        </section>
-      </form>
-    </div>
+
+            {mensaje && (
+              <p
+                role="status"
+                className={cn(
+                  "rounded-xl border px-4 py-3 text-sm",
+                  estadoGuardado === "error"
+                    ? "border-[rgb(255_179_107_/_0.4)] text-[rgb(255_179_107)]"
+                    : "border-[rgb(217_255_31_/_0.4)] text-[rgb(217_255_31)]"
+                )}
+              >
+                {mensaje}
+              </p>
+            )}
+
+            <div className="mt-auto flex flex-wrap gap-2.5">
+              <button
+                type="button"
+                onClick={() => setPanelAbierto(false)}
+                className="h-12 flex-1 basis-40 rounded-full border border-[rgb(242_238_230_/_0.18)] font-mono text-[0.68rem] tracking-[0.14em] text-[rgb(242_238_230)] uppercase hover:border-[rgb(217_255_31_/_0.6)]"
+              >
+                Seguir escribiendo
+              </button>
+              <button
+                type="submit"
+                disabled={estadoGuardado === "guardando" || estadoGuardado === "guardado"}
+                className="inline-flex h-12 flex-1 basis-40 items-center justify-center gap-2 rounded-full bg-[rgb(217_255_31)] font-mono text-[0.68rem] font-medium tracking-[0.14em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(242_238_230)] disabled:opacity-60"
+              >
+                {estadoGuardado === "guardando" && (
+                  <Loader2 className="size-4 animate-spin" />
+                )}
+                {estadoGuardado === "guardado" ? "Enviada" : "Enviar a curaduría"}
+              </button>
+            </div>
+          </aside>
+        </div>
+      )}
+
+      {menu}
+    </form>
   )
 }
