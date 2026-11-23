@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link"
+
+import { HeaderNav } from "@/components/layout/header-nav"
 import { ArrowLeft, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -21,31 +23,31 @@ function formatearFecha(fecha: Date) {
 
 function HeaderObra() {
   return (
-    <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-background/72 px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
-      <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[0.66rem] tracking-[0.16em] text-muted-foreground uppercase sm:flex sm:flex-wrap sm:gap-4 sm:text-[0.68rem] sm:tracking-[0.24em] lg:gap-3">
-        <Link href="/" className="transition-colors hover:text-violet-text">
-          manifiesto
-        </Link>
-        <Link
-          href="/obras-abiertas"
-          className="transition-colors hover:text-violet-text"
+    <HeaderNav
+      accionDerecha={
+        <Button
+          asChild
+          size="lg"
+          className="h-11 w-full gap-2 rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
         >
-          obras abiertas
-        </Link>
-        <span className="text-lime-text">obra</span>
-      </nav>
-
-      <Button
-        asChild
-        size="lg"
-        className="h-11 w-full gap-2 rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
+          <Link href="/obras-abiertas">
+            <X className="size-4" />
+            Cerrar
+          </Link>
+        </Button>
+      }
+    >
+      <Link href="/" className="transition-colors hover:text-violet-text">
+        manifiesto
+      </Link>
+      <Link
+        href="/obras-abiertas"
+        className="transition-colors hover:text-violet-text"
       >
-        <Link href="/obras-abiertas">
-          <X className="size-4" />
-          Cerrar
-        </Link>
-      </Button>
-    </header>
+        obras abiertas
+      </Link>
+      <span className="text-lime-text">obra</span>
+    </HeaderNav>
   )
 }
 
@@ -65,8 +67,8 @@ export default async function ObraDetallePage({
           <div className="py-20">
             <Card className="border-border bg-card/72 p-8 text-foreground">
               <p className="font-serif text-3xl leading-tight">
-                No encontramos esta obra. Puede que aun este en curaduria o
-                que ya no este disponible.
+                No encontramos esta obra. Puede que aun este en curaduria o que
+                ya no este disponible.
               </p>
               <Button
                 asChild

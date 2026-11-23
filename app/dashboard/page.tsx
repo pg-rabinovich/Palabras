@@ -1,6 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 
 import Link from "next/link"
+
+import { HeaderNav } from "@/components/layout/header-nav"
 import { redirect } from "next/navigation"
 import { and, desc, eq } from "drizzle-orm"
 
@@ -172,33 +174,30 @@ export default async function DashboardPage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
       <section className="relative mx-auto w-full max-w-7xl px-6 py-6 lg:px-10">
-        <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-background/72 px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
-          <nav className="flex flex-wrap gap-4 font-mono text-[0.66rem] tracking-[0.2em] text-muted-foreground uppercase sm:text-[0.68rem] sm:tracking-[0.24em]">
-            <Link
-              href="/"
-              className="transition-colors hover:text-violet-text"
-            >
-              manifiesto
-            </Link>
-            <Link
-              href="/obras-abiertas"
-              className="transition-colors hover:text-violet-text"
-            >
-              obras abiertas
-            </Link>
-            <span className="text-lime-text">dashboard</span>
-          </nav>
-
-          <form action="/auth/salir" method="post">
-            <Button
-              type="submit"
-              size="lg"
-              className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
-            >
-              Salir
-            </Button>
-          </form>
-        </header>
+        <HeaderNav
+          accionDerecha={
+            <form action="/auth/salir" method="post">
+              <Button
+                type="submit"
+                size="lg"
+                className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
+              >
+                Salir
+              </Button>
+            </form>
+          }
+        >
+          <Link href="/" className="transition-colors hover:text-violet-text">
+            manifiesto
+          </Link>
+          <Link
+            href="/obras-abiertas"
+            className="transition-colors hover:text-violet-text"
+          >
+            obras abiertas
+          </Link>
+          <span className="text-lime-text">dashboard</span>
+        </HeaderNav>
 
         <div className="relative py-14">
           <div className="mb-4">

@@ -1,5 +1,7 @@
 import Link from "next/link"
 
+import { HeaderNav } from "@/components/layout/header-nav"
+
 import { FondoGlitch } from "@/components/auth/fondo-glitch"
 import { FormularioAcceso } from "@/components/auth/formulario-acceso"
 import { Button } from "@/components/ui/button"
@@ -18,31 +20,31 @@ export default async function AccesoPage({
   return (
     <main className="relative min-h-screen overflow-hidden">
       <section className="relative mx-auto flex min-h-screen w-full max-w-7xl flex-col px-6 py-6 lg:px-10">
-        <header className="relative z-10 flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-background/72 px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
-          <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[0.66rem] tracking-[0.16em] text-muted-foreground uppercase sm:flex sm:flex-wrap sm:gap-4 sm:text-[0.68rem] sm:tracking-[0.24em] lg:gap-3">
-            <Link
-              href="/"
-              className="transition-colors hover:text-violet-text"
+        <HeaderNav
+          className="z-10"
+          accionDerecha={
+            <Button
+              asChild
+              size="lg"
+              className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
             >
-              manifiesto
-            </Link>
-            <span className="text-lime-text">acceso</span>
-          </nav>
-
-          <Button
-            asChild
-            size="lg"
-            className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
-          >
-            <Link href="/">Volver</Link>
-          </Button>
-        </header>
+              <Link href="/">Volver</Link>
+            </Button>
+          }
+        >
+          <Link href="/" className="transition-colors hover:text-violet-text">
+            manifiesto
+          </Link>
+          <span className="text-lime-text">acceso</span>
+        </HeaderNav>
 
         <div className="relative grid flex-1 items-center gap-10 py-12 lg:grid-cols-[1.15fr_minmax(360px,0.85fr)] lg:items-stretch">
           {/* Escenario p5 con la imagen + sparks/glitch */}
           <div className="relative hidden min-h-[28rem] overflow-hidden rounded-[2rem] border border-border bg-marco shadow-profunda lg:block lg:min-h-[34rem]">
             <FondoGlitch />
-            <div className="absolute inset-0 velo-lateral" />
+            <div className="velo-lateral absolute inset-0" />
+            {/* Velo inferior: asegura contraste del texto sobre la foto. */}
+            <div className="velo-inferior absolute inset-x-0 bottom-0 h-1/2" />
             <div className="absolute bottom-8 left-8 max-w-sm">
               <div className="font-mono text-[0.62rem] tracking-[0.32em] text-sobre-foto-acento uppercase">
                 palabra + imagen + presencia

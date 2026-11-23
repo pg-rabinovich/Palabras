@@ -183,7 +183,18 @@
     --sombra-flotante: 0 24px 60px rgb(0 0 0 / 0.75);
     /* Sombra de imagenes y paneles grandes. */
     --sombra-profunda: 0 36px 120px -56px rgb(0 0 0 / 0.85);
-    /* Brillo de vidrio sobre ilustraciones. */
+    /* Velo inferior sobre fotos: oscurece la base para que el texto encima
+     se lea aunque la foto sea clara en esa zona. */
+  .velo-inferior {
+    background-image: linear-gradient(
+      180deg,
+      transparent 0%,
+      color-mix(in srgb, var(--marco) 70%, transparent) 60%,
+      color-mix(in srgb, var(--marco) 92%, transparent) 100%
+    );
+  }
+
+  /* Brillo de vidrio sobre ilustraciones. */
     --brillo-vidrio: rgb(255 255 255 / 0.04);
     /* Tintas que el editor guarda dentro del texto: siguen al tema. */
     --tinta-lima: var(--lime-text);
