@@ -41,6 +41,12 @@
     --color-warning: var(--warning);
     --color-scrim: var(--scrim);
     --shadow-flotante: var(--sombra-flotante);
+    --shadow-profunda: var(--sombra-profunda);
+    --color-marco: var(--marco);
+    --color-sobre-foto: var(--sobre-foto);
+    --color-sobre-foto-suave: var(--sobre-foto-suave);
+    --color-sobre-foto-acento: var(--sobre-foto-acento);
+    --color-sobre-foto-violeta: var(--sobre-foto-violeta);
     --color-lime-text: var(--lime-text);
     --color-destructive-foreground: var(--destructive-foreground);
     --color-sidebar-ring: var(--sidebar-ring);
@@ -101,6 +107,13 @@
     --neo-violet-shadow: #241238;
     /* Gris calido oscuro: texto secundario legible sobre el fondo claro (crudo). */
     --neo-ink-soft: #3c3730;
+    /* Marcos de foto: oscuros en AMBOS temas (convencion de galeria). Todo
+       texto encima de una foto usa estos tokens, nunca foreground/lime-text. */
+    --marco: var(--neo-black);
+    --sobre-foto: var(--neo-paper);
+    --sobre-foto-suave: var(--neo-marble);
+    --sobre-foto-acento: var(--neo-lime);
+    --sobre-foto-violeta: var(--neo-violet-soft);
     --background: var(--neo-black);
     --foreground: var(--neo-paper);
     --card: var(--neo-black-soft);
@@ -168,6 +181,10 @@
     /* Velo detras de paneles y dialogos. */
     --scrim: rgb(5 5 5 / 0.65);
     --sombra-flotante: 0 24px 60px rgb(0 0 0 / 0.75);
+    /* Sombra de imagenes y paneles grandes. */
+    --sombra-profunda: 0 36px 120px -56px rgb(0 0 0 / 0.85);
+    /* Brillo de vidrio sobre ilustraciones. */
+    --brillo-vidrio: rgb(255 255 255 / 0.04);
     /* Tintas que el editor guarda dentro del texto: siguen al tema. */
     --tinta-lima: var(--lime-text);
     --tinta-violeta: var(--violet-text);
@@ -231,6 +248,8 @@
     --warning: #9a4a08;
     --scrim: rgb(40 34 28 / 0.35);
     --sombra-flotante: 0 24px 60px rgb(60 50 35 / 0.22);
+    --sombra-profunda: 0 36px 110px -60px rgb(60 50 35 / 0.45);
+    --brillo-vidrio: rgb(255 255 255 / 0.35);
     --tinta-lima: var(--lime-text);
     --tinta-violeta: var(--violet-text);
     --tinta-piedra: var(--muted-foreground);
@@ -300,6 +319,10 @@
     /* Velo detras de paneles y dialogos. */
     --scrim: rgb(5 5 5 / 0.65);
     --sombra-flotante: 0 24px 60px rgb(0 0 0 / 0.75);
+    /* Sombra de imagenes y paneles grandes. */
+    --sombra-profunda: 0 36px 120px -56px rgb(0 0 0 / 0.85);
+    /* Brillo de vidrio sobre ilustraciones. */
+    --brillo-vidrio: rgb(255 255 255 / 0.04);
     /* Tintas que el editor guarda dentro del texto: siguen al tema. */
     --tinta-lima: var(--lime-text);
     --tinta-violeta: var(--violet-text);
@@ -417,6 +440,20 @@
       color-mix(in srgb, var(--neo-black) 18%, transparent),
       color-mix(in srgb, var(--neo-black) 86%, transparent)
     );
+  }
+
+  /* Velo lateral sobre fotos (acceso): siempre oscuro, como un marco. */
+  .velo-lateral {
+    background-image: linear-gradient(
+      120deg,
+      transparent 40%,
+      color-mix(in srgb, var(--neo-black) 55%, transparent) 100%
+    );
+  }
+
+  /* Brillo de vidrio sobre ilustraciones: mas marcado en claro. */
+  .brillo-vidrio {
+    background-image: linear-gradient(135deg, transparent 0%, var(--brillo-vidrio) 100%);
   }
 
   .card-veil-hover {

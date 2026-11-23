@@ -21,24 +21,24 @@ function formatearFecha(fecha: Date) {
 
 function HeaderObra() {
   return (
-    <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
+    <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-background/72 px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
       <nav className="grid grid-cols-2 gap-x-4 gap-y-3 font-mono text-[0.66rem] tracking-[0.16em] text-muted-foreground uppercase sm:flex sm:flex-wrap sm:gap-4 sm:text-[0.68rem] sm:tracking-[0.24em] lg:gap-3">
-        <Link href="/" className="transition-colors hover:text-[rgb(109_40_255)]">
+        <Link href="/" className="transition-colors hover:text-violet-text">
           manifiesto
         </Link>
         <Link
           href="/obras-abiertas"
-          className="transition-colors hover:text-[rgb(109_40_255)]"
+          className="transition-colors hover:text-violet-text"
         >
           obras abiertas
         </Link>
-        <span className="text-[rgb(217_255_31)]">obra</span>
+        <span className="text-lime-text">obra</span>
       </nav>
 
       <Button
         asChild
         size="lg"
-        className="h-11 w-full gap-2 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
+        className="h-11 w-full gap-2 rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
       >
         <Link href="/obras-abiertas">
           <X className="size-4" />
@@ -63,7 +63,7 @@ export default async function ObraDetallePage({
         <section className="relative mx-auto w-full max-w-4xl px-6 py-6 lg:px-10">
           <HeaderObra />
           <div className="py-20">
-            <Card className="border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.72)] p-8 text-[rgb(242_238_230)]">
+            <Card className="border-border bg-card/72 p-8 text-foreground">
               <p className="font-serif text-3xl leading-tight">
                 No encontramos esta obra. Puede que aun este en curaduria o
                 que ya no este disponible.
@@ -71,7 +71,7 @@ export default async function ObraDetallePage({
               <Button
                 asChild
                 size="lg"
-                className="mt-6 h-11 gap-2 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+                className="mt-6 h-11 gap-2 rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.28em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground"
               >
                 <Link href="/obras-abiertas">
                   <ArrowLeft className="size-4" />
@@ -93,26 +93,26 @@ export default async function ObraDetallePage({
   return (
     <main className="relative min-h-screen overflow-hidden">
       <section className="relative mx-auto w-full max-w-4xl px-6 py-6 lg:px-10">
-        <div className="pointer-events-none absolute top-24 left-8 h-72 w-72 rounded-full bg-[rgb(109_40_255_/_0.16)] blur-3xl" />
-        <div className="pointer-events-none absolute right-0 bottom-24 h-72 w-72 rounded-full bg-[rgb(217_255_31_/_0.08)] blur-3xl" />
+        <div className="pointer-events-none absolute top-24 left-8 h-72 w-72 rounded-full bg-violet-soft blur-3xl" />
+        <div className="pointer-events-none absolute right-0 bottom-24 h-72 w-72 rounded-full bg-lime-soft blur-3xl" />
 
         <HeaderObra />
 
         <article className="relative py-14">
           <div className="mb-8">
-            <div className="font-mono text-[0.68rem] tracking-[0.32em] text-[rgb(217_255_31)] uppercase">
+            <div className="font-mono text-[0.68rem] tracking-[0.32em] text-lime-text uppercase">
               {firma}
             </div>
-            <h1 className="mt-5 font-serif text-5xl leading-[0.95] text-balance text-[rgb(242_238_230)] sm:text-6xl">
+            <h1 className="mt-5 font-serif text-5xl leading-[0.95] text-balance text-foreground sm:text-6xl">
               {obra.titulo}
             </h1>
-            <div className="mt-4 font-mono text-[0.6rem] tracking-[0.2em] text-[rgb(167_161_154)] uppercase">
+            <div className="mt-4 font-mono text-[0.6rem] tracking-[0.2em] text-muted-foreground uppercase">
               {formatearFecha(obra.publicadoEn ?? obra.creadoEn)}
             </div>
           </div>
 
           {portada?.urlPublica && (
-            <div className="mb-10 overflow-hidden rounded-[2rem] border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_36px_120px_-56px_rgb(0_0_0_/_0.85)]">
+            <div className="mb-10 overflow-hidden rounded-[2rem] border border-border bg-marco shadow-profunda">
               <img
                 src={portada.urlPublica}
                 alt={portada.textoAlternativo ?? obra.titulo}
@@ -130,7 +130,7 @@ export default async function ObraDetallePage({
 
           {galeria.length > 0 && (
             <div className="mt-12">
-              <div className="mb-4 font-mono text-[0.62rem] tracking-[0.28em] text-[rgb(217_255_31)] uppercase">
+              <div className="mb-4 font-mono text-[0.62rem] tracking-[0.28em] text-lime-text uppercase">
                 galeria
               </div>
               <div className="grid gap-4 sm:grid-cols-2">
@@ -141,7 +141,7 @@ export default async function ObraDetallePage({
                         key={imagen.id}
                         src={imagen.urlPublica}
                         alt={imagen.textoAlternativo ?? obra.titulo}
-                        className="aspect-[4/3] w-full rounded-2xl border border-[rgb(242_238_230_/_0.12)] object-cover"
+                        className="aspect-[4/3] w-full rounded-2xl border border-border object-cover"
                       />
                     )
                 )}
@@ -149,11 +149,11 @@ export default async function ObraDetallePage({
             </div>
           )}
 
-          <div className="mt-16 flex justify-center border-t border-[rgb(242_238_230_/_0.12)] pt-10">
+          <div className="mt-16 flex justify-center border-t border-border pt-10">
             <Button
               asChild
               size="lg"
-              className="h-11 gap-2 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+              className="h-11 gap-2 rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.28em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground"
             >
               <Link href="/obras-abiertas">
                 <ArrowLeft className="size-4" />

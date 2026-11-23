@@ -53,8 +53,8 @@ function FormAccion({
         variant={tono === "suave" ? "ghost" : "default"}
         className={
           tono === "primario"
-            ? "h-10 w-full rounded-full bg-[rgb(217_255_31)] font-mono text-[0.62rem] tracking-[0.2em] text-[rgb(36_18_56)] uppercase hover:bg-[rgb(242_238_230)]"
-            : "h-10 w-full rounded-full border border-[rgb(242_238_230_/_0.16)] font-mono text-[0.62rem] tracking-[0.2em] text-[rgb(242_238_230_/_0.7)] uppercase hover:border-[rgb(239_68_68_/_0.5)] hover:text-[rgb(252_165_165)]"
+            ? "h-10 w-full rounded-full bg-lime font-mono text-[0.62rem] tracking-[0.2em] text-lime-foreground uppercase hover:bg-primary hover:text-primary-foreground"
+            : "h-10 w-full rounded-full border border-border-strong font-mono text-[0.62rem] tracking-[0.2em] text-foreground-soft uppercase hover:border-destructive/50 hover:text-destructive-foreground"
         }
       >
         {label}
@@ -71,7 +71,7 @@ function TarjetaObra({
   children: React.ReactNode
 }) {
   return (
-    <Card className="flex flex-col gap-4 overflow-hidden border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.82)] p-4 text-[rgb(242_238_230)]">
+    <Card className="flex flex-col gap-4 overflow-hidden border-border bg-card/82 p-4 text-foreground">
       {obra.urlPublica ? (
         <img
           src={obra.urlPublica}
@@ -79,22 +79,22 @@ function TarjetaObra({
           className="aspect-[4/3] w-full rounded-xl object-cover"
         />
       ) : (
-        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-xl border border-dashed border-[rgb(242_238_230_/_0.16)] font-mono text-[0.6rem] tracking-[0.2em] text-[rgb(167_161_154)] uppercase">
+        <div className="flex aspect-[4/3] w-full items-center justify-center rounded-xl border border-dashed border-border-strong font-mono text-[0.6rem] tracking-[0.2em] text-muted-foreground uppercase">
           sin imagen
         </div>
       )}
 
       <div className="flex-1 space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <span className="truncate font-mono text-[0.6rem] tracking-[0.22em] text-[rgb(217_255_31)] uppercase">
+          <span className="truncate font-mono text-[0.6rem] tracking-[0.22em] text-lime-text uppercase">
             {obra.nombreAutor}
           </span>
-          <span className="shrink-0 font-mono text-[0.56rem] tracking-[0.18em] text-[rgb(167_161_154)] uppercase">
+          <span className="shrink-0 font-mono text-[0.56rem] tracking-[0.18em] text-muted-foreground uppercase">
             {formatearFecha(obra.creadoEn)}
           </span>
         </div>
         <h2 className="font-serif text-2xl leading-tight">{obra.titulo}</h2>
-        <p className="line-clamp-4 font-mono text-[0.66rem] leading-5 text-[rgb(217_212_206_/_0.72)]">
+        <p className="line-clamp-4 font-mono text-[0.66rem] leading-5 text-foreground-soft">
           {obra.textoPlano}
         </p>
       </div>
@@ -115,7 +115,7 @@ function Seccion({
 }) {
   return (
     <div className="mt-12 first:mt-0">
-      <div className="mb-5 font-mono text-[0.66rem] tracking-[0.28em] text-[rgb(217_255_31)] uppercase">
+      <div className="mb-5 font-mono text-[0.66rem] tracking-[0.28em] text-lime-text uppercase">
         {titulo} · {obras.length}
       </div>
       {obras.length > 0 ? (
@@ -127,7 +127,7 @@ function Seccion({
           ))}
         </div>
       ) : (
-        <p className="font-mono text-[0.66rem] text-[rgb(167_161_154)]">
+        <p className="font-mono text-[0.66rem] text-muted-foreground">
           Nada por aca.
         </p>
       )}
@@ -172,28 +172,28 @@ export default async function DashboardPage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
       <section className="relative mx-auto w-full max-w-7xl px-6 py-6 lg:px-10">
-        <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-[rgb(5_5_5_/_0.72)] px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
+        <header className="relative flex flex-col gap-4 rounded-[1.5rem] border border-border/80 bg-background/72 px-4 py-4 backdrop-blur sm:rounded-[1.75rem] sm:px-5 lg:flex-row lg:items-center lg:justify-between lg:rounded-full">
           <nav className="flex flex-wrap gap-4 font-mono text-[0.66rem] tracking-[0.2em] text-muted-foreground uppercase sm:text-[0.68rem] sm:tracking-[0.24em]">
             <Link
               href="/"
-              className="transition-colors hover:text-[rgb(109_40_255)]"
+              className="transition-colors hover:text-violet-text"
             >
               manifiesto
             </Link>
             <Link
               href="/obras-abiertas"
-              className="transition-colors hover:text-[rgb(109_40_255)]"
+              className="transition-colors hover:text-violet-text"
             >
               obras abiertas
             </Link>
-            <span className="text-[rgb(217_255_31)]">dashboard</span>
+            <span className="text-lime-text">dashboard</span>
           </nav>
 
           <form action="/auth/salir" method="post">
             <Button
               type="submit"
               size="lg"
-              className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
+              className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
             >
               Salir
             </Button>
@@ -202,11 +202,11 @@ export default async function DashboardPage() {
 
         <div className="relative py-14">
           <div className="mb-4">
-            <div className="font-mono text-[0.68rem] tracking-[0.32em] text-[rgb(217_255_31)] uppercase">
+            <div className="font-mono text-[0.68rem] tracking-[0.32em] text-lime-text uppercase">
               curaduria · {pendientes.length} pendiente
               {pendientes.length === 1 ? "" : "s"}
             </div>
-            <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-none text-balance text-[rgb(242_238_230)] sm:text-6xl">
+            <h1 className="mt-5 max-w-4xl font-serif text-5xl leading-none text-balance text-foreground sm:text-6xl">
               Panel de curaduria.
             </h1>
           </div>

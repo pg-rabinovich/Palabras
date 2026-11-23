@@ -91,10 +91,10 @@ export default async function ObrasAbiertasPage() {
 
                 const contenido = (
                   <article
-                    className={`group relative aspect-[4/3] overflow-hidden rounded-2xl border border-[rgb(242_238_230_/_0.12)] bg-[rgb(5_5_5)] shadow-[0_28px_90px_-58px_rgb(0_0_0_/_0.92)] transition-colors hover:border-[rgb(217_255_31_/_0.42)] ${abrible ? "cursor-pointer" : ""}`}
+                    className={`group relative aspect-[4/3] overflow-hidden rounded-2xl border border-border bg-marco shadow-profunda transition-colors hover:border-lime-text/42 ${abrible ? "cursor-pointer" : ""}`}
                   >
                     {enNegro ? (
-                      <div className="absolute inset-0 bg-[rgb(5_5_5)] transition duration-500 group-hover:opacity-0" />
+                      <div className="absolute inset-0 bg-marco transition duration-500 group-hover:opacity-0" />
                     ) : (
                       <img
                         src={fondo}
@@ -102,7 +102,7 @@ export default async function ObrasAbiertasPage() {
                         className="absolute inset-0 h-full w-full object-cover opacity-[0.72] grayscale transition duration-500 group-hover:opacity-0"
                       />
                     )}
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(5_5_5_/_0.18),rgb(5_5_5_/_0.86))] transition duration-500 group-hover:opacity-0" />
+                    <div className="absolute inset-0 card-veil-rest transition duration-500 group-hover:opacity-0" />
 
                     {obra.urlPublica ? (
                       <img
@@ -111,26 +111,26 @@ export default async function ObrasAbiertasPage() {
                         className="absolute inset-0 h-full w-full scale-105 object-cover opacity-0 blur-sm transition duration-500 group-hover:scale-100 group-hover:opacity-[0.82]"
                       />
                     ) : (
-                      <div className="absolute inset-0 bg-[rgb(5_5_5)] opacity-0 transition duration-500 group-hover:opacity-100" />
+                      <div className="absolute inset-0 bg-marco opacity-0 transition duration-500 group-hover:opacity-100" />
                     )}
 
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(5_5_5_/_0.1),rgb(5_5_5_/_0.86))] opacity-0 transition duration-500 group-hover:opacity-100" />
+                    <div className="absolute inset-0 card-veil-hover opacity-0 transition duration-500 group-hover:opacity-100" />
 
                     <div className="absolute inset-x-0 bottom-0 p-4">
-                      <div className="truncate font-mono text-[0.62rem] tracking-[0.22em] text-[rgb(217_255_31)] uppercase transition duration-500 group-hover:-translate-y-2 group-hover:text-[rgb(139_92_255)]">
+                      <div className="truncate font-mono text-[0.62rem] tracking-[0.22em] text-sobre-foto-acento uppercase transition duration-500 group-hover:-translate-y-2 group-hover:text-sobre-foto-violeta">
                         {firmaDeObra(obra.nombreAutor, obra.id)}
                       </div>
                       {/* min-h reserva 2 lineas siempre, asi la firma no se desalinea
                           segun el titulo de cada obra tenga 1 o 2 lineas. */}
-                      <h2 className="mt-2 line-clamp-2 min-h-[3.75rem] translate-y-5 font-serif text-3xl leading-none text-[rgb(242_238_230)] opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
+                      <h2 className="mt-2 line-clamp-2 min-h-[3.75rem] translate-y-5 font-serif text-3xl leading-none text-sobre-foto opacity-0 transition duration-500 group-hover:translate-y-0 group-hover:opacity-100">
                         {obra.titulo}
                       </h2>
-                      <p className="mt-3 max-h-0 overflow-hidden font-mono text-[0.66rem] leading-5 text-[rgb(217_212_206_/_0.72)] opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
+                      <p className="mt-3 max-h-0 overflow-hidden font-mono text-[0.66rem] leading-5 text-sobre-foto-suave opacity-0 transition-all duration-500 group-hover:max-h-24 group-hover:opacity-100">
                         {obra.textoPlano}
                       </p>
                     </div>
 
-                    <div className="absolute top-4 right-4 rounded-full border border-[rgb(242_238_230_/_0.16)] bg-[rgb(5_5_5_/_0.58)] px-3 py-1 font-mono text-[0.58rem] tracking-[0.2em] text-[rgb(242_238_230_/_0.68)] uppercase backdrop-blur">
+                    <div className="absolute top-4 right-4 rounded-full border border-sobre-foto/20 bg-marco/58 px-3 py-1 font-mono text-[0.58rem] tracking-[0.2em] text-sobre-foto-suave uppercase backdrop-blur">
                       {formatearFecha(obra.creadoEn)}
                     </div>
                   </article>
@@ -149,7 +149,7 @@ export default async function ObrasAbiertasPage() {
               })}
             </div>
           ) : (
-            <Card className="border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.72)] p-8 text-[rgb(242_238_230)]">
+            <Card className="border-border bg-card/72 p-8 text-foreground">
               <p className="font-serif text-3xl leading-tight">
                 Todavia no hay obras abiertas. La primera aparicion puede ser
                 una imagen, una frase, o ambas.
@@ -157,7 +157,7 @@ export default async function ObrasAbiertasPage() {
               <Button
                 asChild
                 size="lg"
-                className="mt-6 h-11 rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.28em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+                className="mt-6 h-11 rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.28em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground"
               >
                 <Link href="/participacion">Crear obra</Link>
               </Button>

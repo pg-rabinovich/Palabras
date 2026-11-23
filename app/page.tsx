@@ -70,7 +70,7 @@ export default function Page() {
         </HeaderNav>
 
         <div id="manifiesto" className="relative pt-24">
-          <div className="overflow-hidden rounded-[2rem] border border-border bg-card/82 shadow-[0_30px_90px_-54px_rgb(0_0_0_/_0.8)]">
+          <div className="overflow-hidden rounded-[2rem] border border-border bg-card/82 shadow-profunda">
             <div className="relative aspect-[16/8] w-full sm:aspect-[16/7] lg:aspect-[16/4.5]">
               <Image
                 src="/images/banner-home-3.png"

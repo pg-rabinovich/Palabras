@@ -10,11 +10,12 @@ import { Button } from "@/components/ui/button"
 // next-themes no sabe la preferencia guardada durante el render de servidor.
 export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme()
-  const [montado, setMontado] = React.useState(false)
-
-  React.useEffect(() => {
-    setMontado(true)
-  }, [])
+  // true en el navegador, false en el render de servidor (sin efecto ni setState).
+  const montado = React.useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
 
   const esOscuro = montado && resolvedTheme === "dark"
 

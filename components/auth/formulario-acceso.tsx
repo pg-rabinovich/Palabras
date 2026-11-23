@@ -61,13 +61,13 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
   if (estado === "enviado") {
     return (
       <div className="space-y-4 text-center">
-        <span className="mx-auto flex size-12 items-center justify-center rounded-full border border-[rgb(217_255_31_/_0.4)] text-[rgb(217_255_31)]">
+        <span className="mx-auto flex size-12 items-center justify-center rounded-full border border-lime-text/40 text-lime-text">
           <Mail className="size-5" />
         </span>
-        <p className="font-serif text-2xl leading-tight text-[rgb(242_238_230)]">
+        <p className="font-serif text-2xl leading-tight text-foreground">
           Revisa tu correo
         </p>
-        <p className="font-mono text-[0.7rem] leading-6 tracking-[0.04em] text-[rgb(217_212_206_/_0.7)]">
+        <p className="font-mono text-[0.7rem] leading-6 tracking-[0.04em] text-foreground-soft">
           {mensaje}
         </p>
         <button
@@ -76,7 +76,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
             setEstado("inicial")
             setMensaje("")
           }}
-          className="font-mono text-[0.64rem] tracking-[0.24em] text-[rgb(167_161_154)] uppercase transition-colors hover:text-[rgb(217_255_31)]"
+          className="font-mono text-[0.64rem] tracking-[0.24em] text-muted-foreground uppercase transition-colors hover:text-lime-text"
         >
           Usar otro email
         </button>
@@ -90,7 +90,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
         <div className="space-y-2">
           <Label
             htmlFor="email"
-            className="font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(217_255_31)] uppercase"
+            className="font-mono text-[0.7rem] tracking-[0.24em] text-lime-text uppercase"
           >
             tu email
           </Label>
@@ -100,7 +100,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
             readOnly
             aria-disabled="true"
             placeholder="proximamente"
-            className="h-12 cursor-default border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm tracking-[0.04em] text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+            className="h-12 cursor-default border-border bg-card/76 font-mono text-sm tracking-[0.04em] text-foreground placeholder:text-muted-foreground/70 focus-visible:border-ring"
           />
         </div>
 
@@ -108,7 +108,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
           type="button"
           size="lg"
           aria-disabled="true"
-          className="h-12 w-full cursor-default rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+          className="h-12 w-full cursor-default rounded-full bg-primary px-6 font-mono text-[0.7rem] tracking-[0.24em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground"
         >
           Proximamente
         </Button>
@@ -121,7 +121,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
       <div className="space-y-2">
         <Label
           htmlFor="email"
-          className="font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(217_255_31)] uppercase"
+          className="font-mono text-[0.7rem] tracking-[0.24em] text-lime-text uppercase"
         >
           tu email
         </Label>
@@ -132,7 +132,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
           value={email}
           onChange={(event) => setEmail(event.target.value)}
           placeholder="voz@correo.com"
-          className="h-12 border-[rgb(242_238_230_/_0.12)] bg-[rgb(11_11_15_/_0.76)] font-mono text-sm tracking-[0.04em] text-[rgb(242_238_230)] placeholder:text-[rgb(167_161_154_/_0.62)] focus-visible:border-[rgb(109_40_255)]"
+          className="h-12 border-border bg-card/76 font-mono text-sm tracking-[0.04em] text-foreground placeholder:text-muted-foreground/70 focus-visible:border-ring"
         />
       </div>
 
@@ -140,7 +140,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
         type="submit"
         size="lg"
         disabled={estado === "enviando"}
-        className="h-12 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.7rem] tracking-[0.24em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)]"
+        className="h-12 w-full rounded-full bg-primary px-6 font-mono text-[0.7rem] tracking-[0.24em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground"
       >
         {estado === "enviando" ? (
           <Loader2 className="size-4 animate-spin" />
@@ -150,7 +150,7 @@ export function FormularioAcceso({ habilitado = false }: FormularioAccesoProps) 
         Recibir enlace
       </Button>
 
-      <p className="min-h-5 font-mono text-[0.66rem] leading-5 text-[rgb(167_161_154)]">
+      <p className="min-h-5 font-mono text-[0.66rem] leading-5 text-muted-foreground">
         {mensaje}
       </p>
     </form>

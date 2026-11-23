@@ -89,7 +89,11 @@ export function FondoGlitch({ src = "/images/login-bg.png" }: { src?: string }) 
 
     function dibujarImagen() {
       if (!imagen) {
-        ctx.fillStyle = "#050505"
+        // Fondo de marca (fijo en ambos temas), leido del token CSS.
+        ctx.fillStyle =
+          getComputedStyle(document.documentElement)
+            .getPropertyValue("--neo-black")
+            .trim() || "black"
         ctx.fillRect(0, 0, ancho, alto)
         return
       }

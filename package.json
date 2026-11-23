@@ -13,7 +13,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "publish-main": "sh ./scripts/publish-main.sh"
+    "publish-main": "sh ./scripts/publish-main.sh",
+    "check:colores": "sh ./scripts/verificar-colores.sh"
   },
   "dependencies": {
     "@hugeicons/core-free-icons": "^4.1.1",

@@ -25,10 +25,10 @@ const marqueeWords = [
 
 export function HeroStage() {
   return (
-    <div className="relative mx-auto flex aspect-[5/4] w-full max-w-2xl items-center justify-center overflow-hidden rounded-[2rem] border border-border/70 bg-editorial-paper p-6 shadow-[0_28px_90px_-40px_rgba(15,23,42,0.35)]">
+    <div className="relative mx-auto flex aspect-[5/4] w-full max-w-2xl items-center justify-center overflow-hidden rounded-[2rem] border border-border/70 bg-editorial-paper p-6 shadow-profunda">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--editorial-glow),_transparent_56%)]" />
       <div className="absolute inset-x-6 top-8 h-px bg-border/70" />
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,transparent_0%,rgba(255,255,255,0.35)_100%)] dark:bg-[linear-gradient(135deg,transparent_0%,rgba(255,255,255,0.04)_100%)]" />
+      <div className="absolute inset-0 brillo-vidrio" />
 
       {floatingWords.map((word) => (
         <div

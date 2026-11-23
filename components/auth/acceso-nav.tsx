@@ -38,7 +38,7 @@ export async function AccesoNav() {
       <Button
         asChild
         size="lg"
-        className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
+        className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
       >
         <Link href="/participacion">Entrar a la instalacion</Link>
       </Button>
@@ -50,19 +50,19 @@ export async function AccesoNav() {
       {sesion.rol === "admin" && (
         <Link
           href="/dashboard"
-          className="font-mono text-[0.64rem] tracking-[0.24em] text-[rgb(217_255_31)] uppercase transition-colors hover:text-[rgb(109_40_255)]"
+          className="font-mono text-[0.64rem] tracking-[0.24em] text-lime-text uppercase transition-colors hover:text-violet-text"
         >
           dashboard
         </Link>
       )}
-      <span className="font-mono text-[0.64rem] tracking-[0.2em] text-[rgb(217_212_206_/_0.78)] uppercase">
+      <span className="font-mono text-[0.64rem] tracking-[0.2em] text-foreground-soft uppercase">
         {sesion.nombreMostrado}
       </span>
       <form action="/auth/salir" method="post">
         <Button
           type="submit"
           size="lg"
-          className="h-11 w-full rounded-full bg-[rgb(242_238_230)] px-6 font-mono text-[0.68rem] tracking-[0.2em] text-[rgb(5_5_5)] uppercase hover:bg-[rgb(217_255_31)] hover:text-[rgb(36_18_56)] sm:w-auto sm:tracking-[0.28em]"
+          className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
         >
           Salir
         </Button>
