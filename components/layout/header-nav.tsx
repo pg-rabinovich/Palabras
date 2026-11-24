@@ -1,3 +1,5 @@
+import { obtenerSesion } from "@/components/auth/acceso-nav"
+import { MenuSesion } from "@/components/layout/menu-sesion"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 
@@ -10,9 +12,15 @@ type HeaderNavProps = {
 }
 
 // Pill-header compartido por todas las paginas. Antes estaba duplicado
-// copy-pasteado en 6 archivos; ahora vive en un solo lugar y siempre incluye
-// el switch de tema.
-export function HeaderNav({ children, accionDerecha, className }: HeaderNavProps) {
+// copy-pasteado en 6 archivos; ahora vive en un solo lugar. Sin sesion muestra
+// el switch de tema; con sesion, el chip de usuario (que incluye el tema).
+export async function HeaderNav({
+  children,
+  accionDerecha,
+  className,
+}: HeaderNavProps) {
+  const sesion = await obtenerSesion()
+
   return (
     <header
       className={cn(
@@ -25,8 +33,9 @@ export function HeaderNav({ children, accionDerecha, className }: HeaderNavProps
       </nav>
 
       <div className="flex items-center gap-3">
-        <ThemeToggle />
+        {!sesion && <ThemeToggle />}
         {accionDerecha}
+        {sesion && <MenuSesion sesion={sesion} />}
       </div>
     </header>
   )

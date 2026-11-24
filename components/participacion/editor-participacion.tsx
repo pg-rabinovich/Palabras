@@ -20,6 +20,7 @@ import StarterKit from "@tiptap/starter-kit"
 import { Check, CircleAlert, Loader2, Plus, Trash2, X } from "lucide-react"
 
 import { BarraHerramientas } from "@/components/participacion/barra-herramientas"
+import { MenuSesion, type DatosSesion } from "@/components/layout/menu-sesion"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenuComandos } from "@/components/participacion/menu-comandos"
 import { ComandosSlash } from "@/lib/editor/comandos-slash"
@@ -100,7 +101,12 @@ function useResumenTexto(editor: Editor | null) {
     editor,
     selector: ({ editor: e }) => {
       if (!e) {
-        return { palabras: 0, caracteres: 0, secciones: [] as Seccion[], activa: -1 }
+        return {
+          palabras: 0,
+          caracteres: 0,
+          secciones: [] as Seccion[],
+          activa: -1,
+        }
       }
       const secciones: Seccion[] = []
       e.state.doc.descendants((nodo, pos) => {
@@ -139,9 +145,11 @@ const claseEtiqueta =
 export function EditorParticipacion({
   firma: firmaInicial,
   logueada = false,
+  sesion,
 }: {
   firma?: string
   logueada?: boolean
+  sesion?: DatosSesion
 }) {
   const inputImagenesRef = React.useRef<HTMLInputElement | null>(null)
   const honeypotRef = React.useRef<HTMLInputElement | null>(null)
@@ -156,8 +164,9 @@ export function EditorParticipacion({
   const [guardandoFirma, setGuardandoFirma] = React.useState(false)
   const [mensajeFirma, setMensajeFirma] = React.useState("")
   const [panelAbierto, setPanelAbierto] = React.useState(false)
-  const [preferencias, setPreferencias] =
-    React.useState<Preferencias>(preferenciasIniciales)
+  const [preferencias, setPreferencias] = React.useState<Preferencias>(
+    preferenciasIniciales
+  )
   const [borradorGuardadoEn, setBorradorGuardadoEn] = React.useState<
     string | null
   >(null)
@@ -441,7 +450,10 @@ export function EditorParticipacion({
   const { cursor } = preferencias
 
   const repaso = [
-    { ok: titulo.trim().length > 0, texto: titulo.trim() ? "Título" : "Falta el título" },
+    {
+      ok: titulo.trim().length > 0,
+      texto: titulo.trim() ? "Título" : "Falta el título",
+    },
     {
       ok: palabras > 0,
       texto:
@@ -451,7 +463,9 @@ export function EditorParticipacion({
     },
     {
       ok: firma.trim().length > 0,
-      texto: firma.trim() ? `Firma: ${firma.trim()}` : "Sin firma: se publica como voz anónima",
+      texto: firma.trim()
+        ? `Firma: ${firma.trim()}`
+        : "Sin firma: se publica como voz anónima",
     },
     {
       ok: true,
@@ -520,7 +534,6 @@ export function EditorParticipacion({
               {palabras} palabras
             </span>
           )}
-          <ThemeToggle />
           <button
             type="button"
             onClick={() => setPanelAbierto(true)}
@@ -528,6 +541,7 @@ export function EditorParticipacion({
           >
             Publicar
           </button>
+          {sesion ? <MenuSesion sesion={sesion} /> : <ThemeToggle />}
         </div>
       </header>
 
@@ -536,7 +550,10 @@ export function EditorParticipacion({
           <aside className="hidden w-[230px] shrink-0 flex-col gap-3 px-6 py-8 lg:flex">
             <span className={claseEtiqueta}>Mapa del texto</span>
             {resumen && resumen.secciones.length > 0 ? (
-              <nav aria-label="Secciones del texto" className="flex flex-col gap-2.5">
+              <nav
+                aria-label="Secciones del texto"
+                className="flex flex-col gap-2.5"
+              >
                 {resumen.secciones.map((seccion, i) => (
                   <button
                     key={`${seccion.pos}-${i}`}
@@ -544,7 +561,9 @@ export function EditorParticipacion({
                     onClick={() => irASeccion(seccion.pos)}
                     className={cn(
                       "border-l py-0.5 text-left font-serif leading-snug transition-colors hover:text-foreground",
-                      seccion.nivel === 3 ? "pl-6 text-[0.95rem]" : "pl-3 text-base",
+                      seccion.nivel === 3
+                        ? "pl-6 text-[0.95rem]"
+                        : "pl-3 text-base",
                       i === resumen.activa
                         ? "border-lime-text text-lime-text"
                         : "border-border text-muted-foreground"
@@ -556,9 +575,10 @@ export function EditorParticipacion({
               </nav>
             ) : (
               <p className="text-[0.8rem] leading-relaxed text-muted-foreground">
-                Los títulos de sección que escribas aparecen acá para saltar entre
-                partes. Probá con <span className="font-mono text-lime-text">/</span>{" "}
-                o escribiendo <span className="font-mono">##</span> y un espacio.
+                Los títulos de sección que escribas aparecen acá para saltar
+                entre partes. Probá con{" "}
+                <span className="font-mono text-lime-text">/</span> o
+                escribiendo <span className="font-mono">##</span> y un espacio.
               </p>
             )}
           </aside>
@@ -640,7 +660,9 @@ export function EditorParticipacion({
               <span className={claseEtiqueta}>Tu sesión</span>
               <div className="grid grid-cols-2 gap-2.5">
                 <div className="rounded-2xl border border-border bg-card p-3.5">
-                  <div className="font-serif text-3xl leading-none">{palabras}</div>
+                  <div className="font-serif text-3xl leading-none">
+                    {palabras}
+                  </div>
                   <div className="mt-1.5 font-mono text-[0.6rem] tracking-[0.14em] text-muted-foreground uppercase">
                     palabras
                   </div>
@@ -725,7 +747,9 @@ export function EditorParticipacion({
           {palabras} palabras · {resumen?.caracteres ?? 0} caracteres ·{" "}
           {resumen?.secciones.length ?? 0} secciones
         </span>
-        <span>/ formatos · Ctrl+B negrita · Ctrl+I itálica · Ctrl+Z deshacer</span>
+        <span>
+          / formatos · Ctrl+B negrita · Ctrl+I itálica · Ctrl+Z deshacer
+        </span>
       </footer>
 
       {panelAbierto && (
@@ -837,8 +861,8 @@ export function EditorParticipacion({
             </div>
 
             <p className="font-serif text-lg leading-relaxed text-foreground-soft">
-              Tu pieza entra a curaduría. La leemos con atención antes de sumarla
-              al archivo vivo. Si resuena, aparece en Obras abiertas.
+              Tu pieza entra a curaduría. La leemos con atención antes de
+              sumarla al archivo vivo. Si resuena, aparece en Obras abiertas.
             </p>
 
             {mensaje && (
@@ -865,13 +889,18 @@ export function EditorParticipacion({
               </button>
               <button
                 type="submit"
-                disabled={estadoGuardado === "guardando" || estadoGuardado === "guardado"}
+                disabled={
+                  estadoGuardado === "guardando" ||
+                  estadoGuardado === "guardado"
+                }
                 className="inline-flex h-12 flex-1 basis-40 items-center justify-center gap-2 rounded-full bg-lime font-mono text-[0.68rem] font-medium tracking-[0.14em] text-lime-foreground uppercase hover:bg-primary hover:text-primary-foreground disabled:opacity-60"
               >
                 {estadoGuardado === "guardando" && (
                   <Loader2 className="size-4 animate-spin" />
                 )}
-                {estadoGuardado === "guardado" ? "Enviada" : "Enviar a curaduría"}
+                {estadoGuardado === "guardado"
+                  ? "Enviada"
+                  : "Enviar a curaduría"}
               </button>
             </div>
           </aside>

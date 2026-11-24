@@ -1,13 +1,15 @@
 import Link from "next/link"
-import { eq } from "drizzle-orm"
+import { cache } from "react"
+import { count, eq } from "drizzle-orm"
 
 import { obtenerBaseDatos } from "@/lib/db/conexion"
-import { perfiles } from "@/lib/db/esquema"
+import { participaciones, perfiles } from "@/lib/db/esquema"
 import { Button } from "@/components/ui/button"
 import { crearSupabaseServidor } from "@/lib/supabase/servidor"
 
 // Lee la sesion y devuelve la firma + rol del usuario actual (o null).
-export async function obtenerSesion() {
+// cache(): varias llamadas en un mismo request (pagina + header) hacen una sola consulta.
+export const obtenerSesion = cache(async function obtenerSesion() {
   const supabase = await crearSupabaseServidor()
   const {
     data: { user },
@@ -22,12 +24,25 @@ export async function obtenerSesion() {
     .where(eq(perfiles.id, user.id))
     .limit(1)
 
+  const rol = perfil?.rol ?? "usuario"
+
+  // Para admins: cuantas piezas esperan curaduria (se muestra en el menu).
+  let pendientes = 0
+  if (rol === "admin") {
+    const [fila] = await db
+      .select({ total: count() })
+      .from(participaciones)
+      .where(eq(participaciones.estado, "borrador"))
+    pendientes = Number(fila?.total ?? 0)
+  }
+
   return {
     id: user.id,
     nombreMostrado: perfil?.nombreMostrado ?? "Voz anonima",
-    rol: perfil?.rol ?? "usuario",
+    rol,
+    pendientes,
   }
-}
+})
 
 // Bloque de acceso/sesion para los headers (CTA si no hay sesion, firma + salir si la hay).
 export async function AccesoNav() {
@@ -45,28 +60,6 @@ export async function AccesoNav() {
     )
   }
 
-  return (
-    <div className="flex w-full flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between lg:w-auto lg:justify-end">
-      {sesion.rol === "admin" && (
-        <Link
-          href="/dashboard"
-          className="font-mono text-[0.64rem] tracking-[0.24em] text-lime-text uppercase transition-colors hover:text-violet-text"
-        >
-          dashboard
-        </Link>
-      )}
-      <span className="font-mono text-[0.64rem] tracking-[0.2em] text-foreground-soft uppercase">
-        {sesion.nombreMostrado}
-      </span>
-      <form action="/auth/salir" method="post">
-        <Button
-          type="submit"
-          size="lg"
-          className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
-        >
-          Salir
-        </Button>
-      </form>
-    </div>
-  )
+  // Con sesion, la firma, el dashboard y Salir viven en el menu del header.
+  return null
 }

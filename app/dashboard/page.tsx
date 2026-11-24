@@ -174,19 +174,7 @@ export default async function DashboardPage() {
   return (
     <main className="relative min-h-screen overflow-hidden">
       <section className="relative mx-auto w-full max-w-7xl px-6 py-6 lg:px-10">
-        <HeaderNav
-          accionDerecha={
-            <form action="/auth/salir" method="post">
-              <Button
-                type="submit"
-                size="lg"
-                className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
-              >
-                Salir
-              </Button>
-            </form>
-          }
-        >
+        <HeaderNav>
           <Link href="/" className="transition-colors hover:text-violet-text">
             manifiesto
           </Link>

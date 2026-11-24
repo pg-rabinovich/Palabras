@@ -10,6 +10,15 @@ export default async function ParticipacionPage() {
       <EditorParticipacion
         firma={sesion?.nombreMostrado}
         logueada={Boolean(sesion)}
+        sesion={
+          sesion
+            ? {
+                nombreMostrado: sesion.nombreMostrado,
+                rol: sesion.rol,
+                pendientes: sesion.pendientes,
+              }
+            : undefined
+        }
       />
     </main>
   )
