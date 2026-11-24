@@ -1,10 +1,9 @@
-import Link from "next/link"
 import { cache } from "react"
 import { count, eq } from "drizzle-orm"
 
 import { obtenerBaseDatos } from "@/lib/db/conexion"
 import { participaciones, perfiles } from "@/lib/db/esquema"
-import { Button } from "@/components/ui/button"
+import { ModalInstalacion } from "@/components/marketing/modal-instalacion"
 import { crearSupabaseServidor } from "@/lib/supabase/servidor"
 
 // Lee la sesion y devuelve la firma + rol del usuario actual (o null).
@@ -49,15 +48,7 @@ export async function AccesoNav() {
   const sesion = await obtenerSesion()
 
   if (!sesion) {
-    return (
-      <Button
-        asChild
-        size="lg"
-        className="h-11 w-full rounded-full bg-primary px-6 font-mono text-[0.68rem] tracking-[0.2em] text-primary-foreground uppercase hover:bg-lime hover:text-lime-foreground sm:w-auto sm:tracking-[0.28em]"
-      >
-        <Link href="/participacion">Entrar a la instalacion</Link>
-      </Button>
-    )
+    return <ModalInstalacion />
   }
 
   // Con sesion, la firma, el dashboard y Salir viven en el menu del header.

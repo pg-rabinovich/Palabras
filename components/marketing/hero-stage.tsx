@@ -28,7 +28,7 @@ export function HeroStage() {
     <div className="relative mx-auto flex aspect-[5/4] w-full max-w-2xl items-center justify-center overflow-hidden rounded-[2rem] border border-border/70 bg-editorial-paper p-6 shadow-profunda">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_var(--editorial-glow),_transparent_56%)]" />
       <div className="absolute inset-x-6 top-8 h-px bg-border/70" />
-      <div className="absolute inset-0 brillo-vidrio" />
+      <div className="brillo-vidrio absolute inset-0" />
 
       {floatingWords.map((word) => (
         <div

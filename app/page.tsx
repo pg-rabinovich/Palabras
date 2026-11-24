@@ -3,6 +3,7 @@ import Link from "next/link"
 
 import { AccesoNav } from "@/components/auth/acceso-nav"
 import { HeaderNav } from "@/components/layout/header-nav"
+import { TarjetaAtmosfera } from "@/components/marketing/tarjeta-atmosfera"
 import { SparksConstruccion } from "@/components/p5/sparks-construccion"
 import {
   Card,
@@ -163,29 +164,7 @@ export default function Page() {
           })}
         </div>
 
-        {/* Card de acento fija oscura en ambos temas (ver .mood-card en globals.css):
-            el texto usa los swatches "neo" fijos, no los tokens que flipean. */}
-        <Card className="mood-card mt-8 overflow-hidden border-border text-neo-paper">
-          <CardContent className="grid gap-6 p-8 lg:grid-cols-[minmax(0,1fr)_minmax(260px,0.7fr)] lg:items-end">
-            <div>
-              <div className="font-mono text-[0.62rem] tracking-[0.28em] text-neo-lime uppercase">
-                atmosfera
-              </div>
-              <p className="mt-4 max-w-3xl font-serif text-4xl leading-tight text-balance sm:text-5xl">
-                En Proceso Σε εξέλιξη In Progress En cours В процессе Em
-                processo In Arbeit In uitvoering Under arbete
-              </p>
-            </div>
-            <div className="space-y-2">
-              <div className="font-script text-4xl text-neo-lime">
-                palabra + imagen + presencia
-              </div>
-              <p className="font-mono text-[0.68rem] tracking-[0.24em] text-neo-marble/62 uppercase">
-                collective writing // poetic interface // visual storytelling
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+        <TarjetaAtmosfera className="mt-8" />
 
         <footer
           id="footer"
