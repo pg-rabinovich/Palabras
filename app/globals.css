@@ -642,7 +642,10 @@
     color: var(--foreground);
   }
 
-  /* Cursor propio: un marcador de ancho cero en la posicion del cursor. */
+  /* Cursor propio: un marcador de ancho cero en la posicion del cursor.
+     Se separa ~0.15em de la ultima letra. El titileo lo decide la persona
+     (interruptor "Titilar"); no se apaga por prefers-reduced-motion porque
+     un cursor que titila no es movimiento, como el cursor nativo. */
   .editor-palabras {
     --color-cursor: var(--cursor-lima);
     --brillo-cursor: var(--cursor-lima-brillo);
@@ -674,7 +677,7 @@
     background: var(--color-cursor);
     box-shadow: 0 0 10px var(--brillo-cursor);
     height: 1.15em;
-    left: 0;
+    left: 0.22em;
     top: -0.92em;
     width: 2px;
   }
@@ -685,7 +688,7 @@
     font-family: var(--font-mono);
     font-size: 1em;
     font-weight: 500;
-    left: 0.04em;
+    left: 0.16em;
     line-height: 1;
     text-shadow: 0 0 10px var(--brillo-cursor);
     top: -0.85em;
@@ -697,7 +700,7 @@
     animation-duration: 1.4s;
     background: var(--color-cursor);
     height: 1.1em;
-    left: 0.06em;
+    left: 0.22em;
     opacity: 0.8;
     top: -0.9em;
     width: 0.55em;
@@ -730,11 +733,6 @@
     }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .editor-palabras .cursor-palabras::after {
-      animation: none;
-    }
-  }
 
   @keyframes float-slow {
     0%,
