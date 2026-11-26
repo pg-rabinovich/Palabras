@@ -3,6 +3,7 @@
 import * as React from "react"
 import type { SuggestionProps } from "@tiptap/suggestion"
 
+import { textoDeAtajo, useEsMac } from "@/lib/editor/atajos"
 import type { ComandoSlash, PuenteMenuSlash } from "@/lib/editor/comandos-slash"
 import { cn } from "@/lib/utils"
 
@@ -50,6 +51,7 @@ function posicionDesde(props: SuggestionProps<ComandoSlash>) {
  * flotante ya dibujado. El puente es estable (no cambia entre renders).
  */
 export function useMenuComandos() {
+  const esMac = useEsMac()
   const [estado, setEstado] = React.useState<EstadoMenu>(cerrado)
   const [indice, setIndice] = React.useState(0)
   const estadoRef = React.useRef(estado)
@@ -153,8 +155,7 @@ export function useMenuComandos() {
               <span
                 className={cn(
                   "flex size-8 shrink-0 items-center justify-center rounded-lg border border-border-strong text-foreground-soft",
-                  i === indice &&
-                    "border-lime-text/50 text-lime-text"
+                  i === indice && "border-lime-text/50 text-lime-text"
                 )}
               >
                 {iconos[item.id]}
@@ -167,7 +168,9 @@ export function useMenuComandos() {
               </span>
               {item.atajo && (
                 <span className="font-mono text-[0.68rem] text-muted-foreground">
-                  {item.atajo}
+                  {typeof item.atajo === "string"
+                    ? item.atajo
+                    : textoDeAtajo(item.atajo, esMac)}
                 </span>
               )}
             </button>

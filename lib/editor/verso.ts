@@ -45,7 +45,8 @@ export const Verso = Node.create({
 
   addKeyboardShortcuts() {
     return {
-      "Mod-Shift-v": () => this.editor.commands.toggleVerso(),
+      // ⌥⌘V / Ctrl+Alt+V (⇧⌘V en Mac es "pegar sin formato", no lo pisamos).
+      "Mod-Alt-v": () => this.editor.commands.toggleVerso(),
       Enter: ({ editor }) => {
         const { state } = editor
         const { $from, empty } = state.selection

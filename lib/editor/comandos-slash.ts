@@ -1,5 +1,6 @@
 import { Extension, type Editor, type Range } from "@tiptap/core"
 import { PluginKey } from "@tiptap/pm/state"
+import type { Atajo } from "@/lib/editor/atajos"
 import Suggestion, {
   type SuggestionKeyDownProps,
   type SuggestionProps,
@@ -9,7 +10,8 @@ export type ComandoSlash = {
   id: string
   titulo: string
   descripcion: string
-  atajo?: string
+  /** Texto que se escribe ("##") o combinacion de teclas (["Mod", "Alt", "V"]). */
+  atajo?: string | Atajo
   palabrasClave: string[]
   ejecutar: (editor: Editor, rango: Range) => void
 }
@@ -46,7 +48,7 @@ export const comandosSlash: ComandoSlash[] = [
     id: "verso",
     titulo: "Verso",
     descripcion: "Poesía: saltos y sangrías exactas",
-    atajo: "Ctrl ⇧ V",
+    atajo: ["Mod", "Alt", "V"],
     palabrasClave: ["verso", "poesia", "poema"],
     ejecutar: (editor, rango) =>
       editor.chain().focus().deleteRange(rango).setNode("verso").run(),
@@ -94,10 +96,7 @@ export const comandosSlash: ComandoSlash[] = [
 ]
 
 function normalizar(texto: string) {
-  return texto
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
+  return texto.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "")
 }
 
 export function filtrarComandos(consulta: string) {
@@ -120,7 +119,9 @@ export type PuenteMenuSlash = {
   alCerrar: () => void
 }
 
-export const ComandosSlash = Extension.create<{ puente: PuenteMenuSlash | null }>({
+export const ComandosSlash = Extension.create<{
+  puente: PuenteMenuSlash | null
+}>({
   name: "comandosSlash",
 
   addOptions() {

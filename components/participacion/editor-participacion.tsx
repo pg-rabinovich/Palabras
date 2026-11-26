@@ -23,6 +23,7 @@ import { BarraHerramientas } from "@/components/participacion/barra-herramientas
 import { MenuSesion, type DatosSesion } from "@/components/layout/menu-sesion"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenuComandos } from "@/components/participacion/menu-comandos"
+import { textoDeAtajo, useEsMac } from "@/lib/editor/atajos"
 import { ComandosSlash } from "@/lib/editor/comandos-slash"
 import {
   CursorPalabras,
@@ -172,6 +173,7 @@ export function EditorParticipacion({
   >(null)
 
   const { puente, menu } = useMenuComandos()
+  const esMac = useEsMac()
   const firmaCambiada = firma.trim() !== (firmaInicial ?? "").trim()
 
   function actualizarPreferencias(cambio: Partial<Preferencias>) {
@@ -748,7 +750,9 @@ export function EditorParticipacion({
           {resumen?.secciones.length ?? 0} secciones
         </span>
         <span>
-          / formatos · Ctrl+B negrita · Ctrl+I itálica · Ctrl+Z deshacer
+          / formatos · {textoDeAtajo(["Mod", "B"], esMac)} negrita ·{" "}
+          {textoDeAtajo(["Mod", "I"], esMac)} itálica ·{" "}
+          {textoDeAtajo(["Mod", "Z"], esMac)} deshacer
         </span>
       </footer>
 
