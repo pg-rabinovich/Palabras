@@ -670,10 +670,6 @@
     position: absolute;
   }
 
-  .editor-palabras[data-cursor-titila="no"] .cursor-palabras::after {
-    animation: none;
-  }
-
   .editor-palabras[data-cursor-forma="barra"] .cursor-palabras::after {
     background: var(--color-cursor);
     box-shadow: 0 0 10px var(--brillo-cursor);
@@ -705,6 +701,12 @@
     opacity: 0.8;
     top: -0.9em;
     width: 0.55em;
+  }
+
+  /* "No titilar" va despues de las formas y con mas especificidad: vale
+     para las tres (antes el bloque la pisaba). */
+  .editor-palabras[data-cursor-titila="no"][data-cursor-forma] .cursor-palabras::after {
+    animation: none;
   }
 
   @keyframes titilar-cursor {

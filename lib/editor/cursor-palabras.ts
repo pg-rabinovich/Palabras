@@ -23,8 +23,9 @@ const claveCursor = new PluginKey("cursor-palabras")
  * Dibuja un cursor propio (un widget de ancho cero en la posicion del cursor).
  * La forma, el color y el titileo se controlan por CSS con atributos data-* en
  * el contenedor del editor, asi cambiar la preferencia no re-crea el editor.
- * Mientras se escribe el widget se recrea, la animacion reinicia y el cursor
- * queda visible, como un cursor nativo.
+ * La key depende solo de la posicion: quieto, el mismo elemento sigue vivo y
+ * titila sin cortes; al escribir (cambia la posicion) se crea uno nuevo, la
+ * animacion reinicia y el cursor queda visible, como un cursor nativo.
  */
 export const CursorPalabras = Extension.create({
   name: "cursorPalabras",
@@ -48,7 +49,7 @@ export const CursorPalabras = Extension.create({
                 marca.setAttribute("aria-hidden", "true")
                 return marca
               },
-              { key: `cursor-${pos}-${Date.now()}`, side: 1, marks: [] }
+              { key: `cursor-${pos}`, side: 1, marks: [] }
             )
             return DecorationSet.create(state.doc, [widget])
           },
