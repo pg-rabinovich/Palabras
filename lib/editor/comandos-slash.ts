@@ -87,10 +87,13 @@ export const comandosSlash: ComandoSlash[] = [
     palabrasClave: ["imagen", "foto"],
     ejecutar: (editor, rango) => {
       editor.chain().focus().deleteRange(rango).run()
-      const url = window.prompt("URL de la imagen")
-      if (url) {
-        editor.chain().focus().setImage({ src: url }).run()
-      }
+      // El dialogo de imagen lo abre el componente del editor (ver PuenteDialogos).
+      const puente = (
+        editor.storage as unknown as {
+          puenteDialogos?: { pedirImagen?: () => void }
+        }
+      ).puenteDialogos
+      puente?.pedirImagen?.()
     },
   },
 ]
@@ -149,3 +152,27 @@ export const ComandosSlash = Extension.create<{
     ]
   },
 })
+
+/**
+ * Lugar donde el componente del editor deja la funcion que abre el dialogo de
+ * imagen, para que el comando "/imagen" la pueda llamar.
+ */
+export const PuenteDialogos = Extension.create({
+  name: "puenteDialogos",
+  addStorage() {
+    return { pedirImagen: null as null | (() => void) }
+  },
+})
+
+/** Registra (o quita, con null) la funcion que abre el dialogo de imagen. */
+export function registrarPedirImagen(
+  editor: Editor,
+  pedirImagen: null | (() => void)
+) {
+  const almacen = editor.storage as unknown as {
+    puenteDialogos?: { pedirImagen: null | (() => void) }
+  }
+  if (almacen.puenteDialogos) {
+    almacen.puenteDialogos.pedirImagen = pedirImagen
+  }
+}

@@ -11,7 +11,7 @@ import sanitizeHtml from "sanitize-html"
 
 const alineacion = [/^(left|center|right|justify)$/]
 const colorSeguro = [
-  /^var\(--tinta-(lima|violeta|piedra)\)$/,
+  /^var\(--tinta-(lima|violeta|piedra|rosa|coral|ambar|menta|cielo)\)$/,
   /^#[0-9a-f]{3,8}$/i,
   /^rgba?\(\s*[\d.\s,%]+\)$/i,
 ]
@@ -45,7 +45,7 @@ export function sanitizarHtmlParticipacion(html: string): string {
     ],
     allowedAttributes: {
       a: ["href", "target", "rel"],
-      img: ["src", "alt"],
+      img: ["src", "alt", "data-ancho", "data-alineacion"],
       p: ["style"],
       h1: ["style"],
       h2: ["style"],

@@ -21,6 +21,7 @@
     "@hugeicons/react": "^1.1.6",
     "@supabase/ssr": "^0.10.3",
     "@supabase/supabase-js": "^2.106.0",
+    "@tiptap/extension-bubble-menu": "^3.23.5",
     "@tiptap/extension-highlight": "^3.23.5",
     "@tiptap/extension-image": "^3.23.5",
     "@tiptap/extension-link": "^3.23.5",

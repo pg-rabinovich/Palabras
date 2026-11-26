@@ -131,10 +131,14 @@ Para que el texto se lea aunque la foto sea clara en esa zona, existen las clase
 
 ## Dentro del texto del editor
 
-- **Colores de letra**: el editor guarda `var(--tinta-lima)`, `var(--tinta-violeta)` o
-  `var(--tinta-piedra)`, no un color. Así un texto pintado de lima se ve lima en oscuro y oliva
+- **Colores de letra**: el editor guarda `var(--tinta-<color>)`, no un color. Hay ocho:
+  `lima`, `violeta`, `rosa`, `coral`, `ambar`, `menta`, `cielo` y `piedra`, cada uno con un
+  valor para oscuro y otro para claro (todos con contraste de 5,3:1 o más sobre la hoja). Así un texto pintado de lima se ve lima en oscuro y oliva
   en claro, también en la obra publicada. El sanitizador (`lib/sanitizar-html.ts`) solo acepta
   esos valores.
+- **Imágenes**: guardan su tamaño (`data-ancho`: 25, 50, 75 o 100) y su posición
+  (`data-alineacion`: izquierda, centro o derecha); el CSS de `globals.css` los aplica en el
+  editor y en la obra publicada.
 - **Cursor**: `cursor-lima` (lima en oscuro, oliva con brillo lima en claro) y `cursor-clasico`
   (blanco en oscuro, tinta negra en claro).
 

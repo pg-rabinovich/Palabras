@@ -200,6 +200,11 @@
     --tinta-lima: var(--lime-text);
     --tinta-violeta: var(--violet-text);
     --tinta-piedra: var(--muted-foreground);
+    --tinta-rosa: #ff8fc7;
+    --tinta-coral: #ff8a6b;
+    --tinta-ambar: #ffc35a;
+    --tinta-menta: #6ee7b7;
+    --tinta-cielo: #7cc4ff;
     /* Cursor del editor. */
     --cursor-lima: var(--neo-lime);
     --cursor-lima-brillo: rgb(217 255 31 / 0.6);
@@ -264,6 +269,12 @@
     --tinta-lima: var(--lime-text);
     --tinta-violeta: var(--violet-text);
     --tinta-piedra: var(--muted-foreground);
+    /* Tintas en claro: todas >= 5.3:1 sobre la hoja (#faf7f1). */
+    --tinta-rosa: #b4236f;
+    --tinta-coral: #b3401e;
+    --tinta-ambar: #875600;
+    --tinta-menta: #17704f;
+    --tinta-cielo: #1f5fa8;
     /* Sobre crudo el lima puro no se ve: el cursor lima se dibuja oliva con brillo lima. */
     --cursor-lima: var(--lime-text);
     --cursor-lima-brillo: rgb(217 255 31 / 0.9);
@@ -338,6 +349,11 @@
     --tinta-lima: var(--lime-text);
     --tinta-violeta: var(--violet-text);
     --tinta-piedra: var(--muted-foreground);
+    --tinta-rosa: #ff8fc7;
+    --tinta-coral: #ff8a6b;
+    --tinta-ambar: #ffc35a;
+    --tinta-menta: #6ee7b7;
+    --tinta-cielo: #7cc4ff;
     /* Cursor del editor. */
     --cursor-lima: var(--neo-lime);
     --cursor-lima-brillo: rgb(217 255 31 / 0.6);
@@ -630,7 +646,41 @@
   .editor-palabras .texto-palabras img {
     border: 1px solid var(--border);
     border-radius: 1rem;
+    display: block;
+    height: auto;
+    margin-inline: auto;
     max-width: 100%;
+  }
+
+  /* Tamano y posicion de imagenes (data-ancho / data-alineacion). */
+  .editor-palabras .texto-palabras img[data-ancho="25"] {
+    width: 25%;
+  }
+
+  .editor-palabras .texto-palabras img[data-ancho="50"] {
+    width: 50%;
+  }
+
+  .editor-palabras .texto-palabras img[data-ancho="75"] {
+    width: 75%;
+  }
+
+  .editor-palabras .texto-palabras img[data-ancho="100"] {
+    width: 100%;
+  }
+
+  .editor-palabras .texto-palabras img[data-alineacion="izquierda"] {
+    margin-left: 0;
+    margin-right: auto;
+  }
+
+  .editor-palabras .texto-palabras img[data-alineacion="derecha"] {
+    margin-left: auto;
+    margin-right: 0;
+  }
+
+  .editor-palabras .texto-palabras.ProseMirror img {
+    cursor: pointer;
   }
 
   .editor-palabras .texto-palabras img.ProseMirror-selectednode {

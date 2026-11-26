@@ -10,7 +10,6 @@ import {
   useEditorState,
   type Editor,
 } from "@tiptap/react"
-import ImageExtension from "@tiptap/extension-image"
 import Highlight from "@tiptap/extension-highlight"
 import TextAlign from "@tiptap/extension-text-align"
 import { TextStyleKit } from "@tiptap/extension-text-style"
@@ -20,11 +19,24 @@ import StarterKit from "@tiptap/starter-kit"
 import { Check, CircleAlert, Loader2, Plus, Trash2, X } from "lucide-react"
 
 import { BarraHerramientas } from "@/components/participacion/barra-herramientas"
+import {
+  DialogosEditor,
+  type DatosDialogo,
+} from "@/components/participacion/dialogos-editor"
+import {
+  MenuEnlace,
+  MenuImagen,
+} from "@/components/participacion/menus-flotantes"
 import { MenuSesion, type DatosSesion } from "@/components/layout/menu-sesion"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenuComandos } from "@/components/participacion/menu-comandos"
 import { textoDeAtajo, useEsMac } from "@/lib/editor/atajos"
-import { ComandosSlash } from "@/lib/editor/comandos-slash"
+import {
+  ComandosSlash,
+  PuenteDialogos,
+  registrarPedirImagen,
+} from "@/lib/editor/comandos-slash"
+import { ImagenPalabras } from "@/lib/editor/imagen-palabras"
 import {
   CursorPalabras,
   preferenciasCursorIniciales,
@@ -191,7 +203,7 @@ export function EditorParticipacion({
         heading: { levels: [2, 3] },
         link: { openOnClick: false, autolink: true },
       }),
-      ImageExtension.configure({ allowBase64: false }),
+      ImagenPalabras,
       Highlight,
       TextStyleKit.configure({ lineHeight: false, backgroundColor: false }),
       TextAlign.configure({ types: ["heading", "paragraph", "verso"] }),
@@ -209,6 +221,7 @@ export function EditorParticipacion({
       Verso,
       CursorPalabras,
       ComandosSlash.configure({ puente }),
+      PuenteDialogos,
     ],
     editorProps: {
       attributes: {
@@ -239,6 +252,76 @@ export function EditorParticipacion({
       }
     },
   })
+
+  // Dialogos de shadcn para enlace e imagen (reemplazan a window.prompt).
+  const [dialogo, setDialogo] = React.useState<DatosDialogo | null>(null)
+
+  const pedirEnlace = React.useCallback(() => {
+    if (!editor) return
+    const existe = editor.isActive("link")
+    setDialogo({
+      tipo: "enlace",
+      href: existe ? ((editor.getAttributes("link").href as string) ?? "") : "",
+      existe,
+      tieneTexto: existe || !editor.state.selection.empty,
+    })
+  }, [editor])
+
+  const pedirImagen = React.useCallback(
+    (editar = false) => {
+      if (!editor) return
+      const attrs = editar
+        ? (editor.getAttributes("image") as { src?: string; alt?: string })
+        : {}
+      setDialogo({
+        tipo: "imagen",
+        src: attrs.src ?? "",
+        alt: attrs.alt ?? "",
+        editar,
+      })
+    },
+    [editor]
+  )
+
+  // El comando "/imagen" abre el mismo dialogo.
+  React.useEffect(() => {
+    if (!editor) return
+    registrarPedirImagen(editor, () => pedirImagen(false))
+    return () => registrarPedirImagen(editor, null)
+  }, [editor, pedirImagen])
+
+  function guardarEnlace(href: string, texto: string) {
+    if (!editor || dialogo?.tipo !== "enlace") return
+    if (dialogo.tieneTexto) {
+      editor.chain().focus().extendMarkRange("link").setLink({ href }).run()
+    } else {
+      editor
+        .chain()
+        .focus()
+        .insertContent({
+          type: "text",
+          text: texto || href.replace(/^(https?:\/\/|mailto:)/, ""),
+          marks: [{ type: "link", attrs: { href } }],
+        })
+        .run()
+    }
+    setDialogo(null)
+  }
+
+  function quitarEnlace() {
+    editor?.chain().focus().extendMarkRange("link").unsetLink().run()
+    setDialogo(null)
+  }
+
+  function guardarImagen(src: string, alt: string) {
+    if (!editor || dialogo?.tipo !== "imagen") return
+    if (dialogo.editar) {
+      editor.chain().focus().updateAttributes("image", { src, alt }).run()
+    } else {
+      editor.chain().focus().setImage({ src, alt }).run()
+    }
+    setDialogo(null)
+  }
 
   // Autoguardado del borrador en este dispositivo (texto y titulo).
   const tituloActualRef = React.useRef(titulo)
@@ -609,6 +692,8 @@ export function EditorParticipacion({
                 onCambiarCursor={(nuevo) =>
                   actualizarPreferencias({ cursor: nuevo })
                 }
+                onPedirEnlace={pedirEnlace}
+                onPedirImagen={() => pedirImagen(false)}
               />
             )}
 
@@ -912,6 +997,20 @@ export function EditorParticipacion({
       )}
 
       {menu}
+      {editor && (
+        <>
+          <MenuEnlace editor={editor} onEditar={pedirEnlace} />
+          <MenuImagen editor={editor} onEditar={() => pedirImagen(true)} />
+        </>
+      )}
+      <DialogosEditor
+        dialogo={dialogo}
+        onCerrar={() => setDialogo(null)}
+        onDevolverFoco={() => editor?.commands.focus()}
+        onGuardarEnlace={guardarEnlace}
+        onQuitarEnlace={quitarEnlace}
+        onGuardarImagen={guardarImagen}
+      />
     </form>
   )
 }

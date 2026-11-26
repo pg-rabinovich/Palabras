@@ -66,6 +66,27 @@ const colores = [
     valor: "var(--tinta-violeta)",
     muestra: "var(--tinta-violeta)",
   },
+  { nombre: "Rosa", valor: "var(--tinta-rosa)", muestra: "var(--tinta-rosa)" },
+  {
+    nombre: "Coral",
+    valor: "var(--tinta-coral)",
+    muestra: "var(--tinta-coral)",
+  },
+  {
+    nombre: "Ámbar",
+    valor: "var(--tinta-ambar)",
+    muestra: "var(--tinta-ambar)",
+  },
+  {
+    nombre: "Menta",
+    valor: "var(--tinta-menta)",
+    muestra: "var(--tinta-menta)",
+  },
+  {
+    nombre: "Cielo",
+    valor: "var(--tinta-cielo)",
+    muestra: "var(--tinta-cielo)",
+  },
   {
     nombre: "Piedra",
     valor: "var(--tinta-piedra)",
@@ -203,12 +224,17 @@ export function BarraHerramientas({
   onAlternarLienzo,
   cursor,
   onCambiarCursor,
+  onPedirEnlace,
+  onPedirImagen,
 }: {
   editor: Editor
   lienzoAmplio: boolean
   onAlternarLienzo: () => void
   cursor: PreferenciasCursor
   onCambiarCursor: (cursor: PreferenciasCursor) => void
+  /** Abren los dialogos de shadcn (enlace / imagen) del editor. */
+  onPedirEnlace: () => void
+  onPedirImagen: () => void
 }) {
   const esMac = useEsMac()
   const estado = useEditorState({
@@ -305,31 +331,6 @@ export function BarraHerramientas({
       editor.chain().focus().unsetFontSize().run()
     } else {
       editor.chain().focus().setFontSize(`${nuevo}px`).run()
-    }
-  }
-
-  function editarEnlace() {
-    const anterior = editor.getAttributes("link").href as string | undefined
-    const url = window.prompt("Dirección del enlace", anterior ?? "https://")
-    if (url === null) {
-      return
-    }
-    if (url.trim() === "") {
-      editor.chain().focus().extendMarkRange("link").unsetLink().run()
-      return
-    }
-    editor
-      .chain()
-      .focus()
-      .extendMarkRange("link")
-      .setLink({ href: url.trim() })
-      .run()
-  }
-
-  function insertarImagen() {
-    const url = window.prompt("URL de la imagen")
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
     }
   }
 
@@ -515,9 +516,9 @@ export function BarraHerramientas({
               />
             </Boton>
             {colorAbierto && (
-              <div className="absolute top-11 left-0 z-30 flex w-56 flex-col gap-3 rounded-2xl border border-border-strong bg-popover p-3.5 shadow-flotante">
+              <div className="absolute top-11 left-0 z-30 flex w-64 flex-col gap-3 rounded-2xl border border-border-strong bg-popover p-3.5 shadow-flotante">
                 <span className={claseEtiquetaPopover}>Color de letra</span>
-                <div className="grid grid-cols-4 gap-1.5">
+                <div className="grid grid-cols-5 gap-1.5">
                   {colores.map((color) => (
                     <button
                       key={color.nombre}
@@ -646,14 +647,14 @@ export function BarraHerramientas({
             etiqueta="Enlace"
             descripcion="Convierte lo seleccionado en un enlace. Dejalo vacío para quitarlo."
             activo={estado.enlace}
-            onClick={editarEnlace}
+            onClick={onPedirEnlace}
           >
             <Link2 className="size-4" />
           </Boton>
           <Boton
             etiqueta="Imagen"
             descripcion="Inserta una imagen desde una dirección web."
-            onClick={insertarImagen}
+            onClick={onPedirImagen}
           >
             <ImageIcon className="size-4" />
           </Boton>
